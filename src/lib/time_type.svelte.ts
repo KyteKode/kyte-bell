@@ -51,6 +51,14 @@ export default class Time {
         const m = this.minute.replace(/^0+(?=\d{2})/, "");
         return `${h}:${m} ${this.ampm == AMPM.AM ? "AM" : "PM"}`;
     }
+
+    clone(this: Time): Time {
+        return new Time(
+            $state.snapshot(this.hour),
+            $state.snapshot(this.minute),
+            $state.snapshot(this.ampm),
+        )
+    }
 }
 
 export enum AMPM {
