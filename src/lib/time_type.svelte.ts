@@ -1,8 +1,4 @@
 export default class Time {
-    hour: string = $state("8");
-    minute: string = $state("00");
-    ampm: AMPM = $state(AMPM.AM);
-
     valid: boolean = $derived(
         (() => {
             const valid_int = (str: string) => {
@@ -13,51 +9,50 @@ export default class Time {
                 return n >= min && n <= max;
             }
 
+            // Hour is a valid integer between 1 and 12?
             if (!valid_int(this.hour)) return false;
             if (!num_between(1, Number(this.hour), 12)) return false;
 
+            // Minute is a valid integer between 0 and 59?
             if (!valid_int(this.minute)) return false;
-
             return num_between(0, Number(this.minute), 59);
         })()
-    )
+    );
 
-    constructor(hour: string = "8", minute: string = "00", ampm: AMPM = AMPM.AM) {
-        this.hour = hour;
-        this.minute = minute;
-        this.ampm = ampm;
+    hour: string = $state("8");
+    minute: string = $state("00");
+    ampm: AMPM = $state(AMPM.AM);
+
+    // Changes the time to minutes for comparisons
+    // e.g. 1:00 AM becomes 90, 12:00 PM becomes 720
+    to_minutes(this: Time) {
+        const hours = Number(this.hour) % 12 + Number(this.ampm == AMPM.PM) * 12;
+        return hours * 60 + Number(this.minute);
     }
 
-    is_after(this: Time, other: Time): boolean {
+    // Checks if this time is after another time.
+    after(this: Time, other: Time): boolean {
         if (!this.valid || !other.valid) return false;
 
-        const this_h = Number(this.hour);
-        const this_m = Number(this.minute);
+        const this_mins = this.to_minutes();
+        const other_mins = other.to_minutes();
 
-        const other_h = Number(other.hour);
-        const other_m = Number(other.minute);
-
-        if (this.ampm < other.ampm) return false;
-        if (this.ampm > other.ampm) return true;
-
-        if (this_h < other_h) return false;
-        if (this_h > other_h) return true;
-
-        return this_m > other_m;
+        return this_mins > other_mins;
     }
 
+    // Formats the time as a string.
     to_string(this: Time): string {
         const h = String(Number(this.hour));
         const m = this.minute.replace(/^0+(?=\d{2})/, "");
         return `${h}:${m} ${this.ampm == AMPM.AM ? "AM" : "PM"}`;
     }
-
+    
     clone(this: Time): Time {
-        return new Time(
-            $state.snapshot(this.hour),
-            $state.snapshot(this.minute),
-            $state.snapshot(this.ampm),
-        )
+        const cloned = new Time();
+        cloned.hour = $state.snapshot(this.hour);
+        cloned.minute = $state.snapshot(this.minute);
+        cloned.ampm = $state.snapshot(this.ampm);
+        return cloned;
     }
 }
 
