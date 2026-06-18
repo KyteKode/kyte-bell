@@ -1,13 +1,15 @@
 import PeriodData from "$lib/period_data.svelte";
 
-let _periods: Record<string, PeriodData> = $state({});
-let _new_period_name: string = $state("Class");
+const _periods: PeriodData[] = $state([]);
 
 const globals = {
     get periods() { return _periods; },
-    set periods(v: Record<string, PeriodData>) { _periods = v; },
-
-    get new_period_name() { return _new_period_name; },
-    set new_period_name(v: string) { _new_period_name = v; }
+    periods_push(data: PeriodData) {
+        _periods.push(data);
+        _periods.sort((a, b) => a.start.to_minutes() - b.start.to_minutes());
+    },
+    periods_delete(idx: number) {
+        _periods.splice(idx, 1);
+    }
 }
 export default globals;

@@ -42,8 +42,8 @@ export default class Time {
 
     // Formats the time as a string.
     to_string(this: Time): string {
-        const h = String(Number(this.hour));
-        const m = this.minute.replace(/^0+(?=\d{2})/, "");
+        const h = Number(this.hour).toString();
+        const m = Number(this.minute).toString().padStart(2, '0');
         return `${h}:${m} ${this.ampm == AMPM.AM ? "AM" : "PM"}`;
     }
     
