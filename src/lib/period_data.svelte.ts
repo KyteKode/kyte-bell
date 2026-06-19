@@ -4,9 +4,9 @@ import globals from "$lib/globals.svelte";
 
 function latest_end() {
     let latest: Time | null = null;
-    for (const data of globals.periods) {
-        if (latest == null || data.end.after(latest)) {
-            latest = data.end;
+    for (const period of globals.periods) {
+        if (latest == null || period.end.after(latest)) {
+            latest = period.end;
         }
     }
 
