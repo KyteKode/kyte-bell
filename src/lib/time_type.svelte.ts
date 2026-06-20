@@ -1,3 +1,5 @@
+import type { JSONTime } from "$lib/storage_schemas";
+
 export default class Time {
     valid: boolean = $derived(
         (() => {
@@ -23,21 +25,58 @@ export default class Time {
     minute: string = $state("00");
     ampm: AMPM = $state(AMPM.AM);
 
+    constructor(hour?: string | number, minute?: string | number, ampm?: AMPM) {
+        if (hour) {
+            if (typeof hour == "string") {
+                this.hour = hour;
+            } else {
+                this.hour = hour.toString();
+            }
+        } else {
+            this.hour = "8";
+        }
+
+        if (minute) {
+            if (typeof minute == "string") {
+                this.minute = minute;
+            } else {
+                this.minute = minute.toString().padStart(2, '0');
+            }
+        } else {
+            this.minute = "00";
+        }
+
+        this.ampm = ampm ?? AMPM.AM;
+    }
+
     private second: number = $state(0); // used only for time_until and time_since
+
+    to_json_interface(this: Time): JSONTime {
+        return {
+            hour: this.hour,
+            minute: this.minute,
+            ampm: this.ampm
+        }
+    }
+
+    static from_json_interface(data: JSONTime) {
+        const inst = new Time(data.hour, data.minute, data.ampm);
+        return inst;
+    }
 
     static now() {
         // eslint-disable-next-line svelte/prefer-svelte-reactivity
         const date = new Date();
-        const time = new Time();
 
         let hour = date.getHours();
-        time.ampm = hour >= 12 ? AMPM.PM : AMPM.AM;
+        const ampm = hour >= 12 ? AMPM.PM : AMPM.AM;
 
         hour = hour % 12;
         if (hour == 0) { hour = 12; }
 
-        time.hour = hour.toString();
-        time.minute = date.getMinutes().toString().padStart(2, '0');
+        const minute = date.getMinutes()
+
+        const time = new Time(hour, minute, ampm);
         time.second = date.getSeconds();
 
         return time;
@@ -141,11 +180,11 @@ export default class Time {
     }
 
     clone(this: Time): Time {
-        const cloned = new Time();
-        cloned.hour = $state.snapshot(this.hour);
-        cloned.minute = $state.snapshot(this.minute);
-        cloned.ampm = $state.snapshot(this.ampm);
-        return cloned;
+        return new Time(
+            $state.snapshot(this.hour),
+            $state.snapshot(this.minute),
+            $state.snapshot(this.ampm)
+        );
     }
 }
 

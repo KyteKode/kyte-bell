@@ -5,6 +5,7 @@
     import PeriodData from "$lib/period_data.svelte";
     import globals from "$lib/globals.svelte";
     import CurrentPeriodDisplay from "$lib/components/CurrentPeriodDisplay.svelte";
+    import { ls_available } from "$lib/localstorage_updater";
 
 
 
@@ -31,6 +32,16 @@
 <CurrentPeriodDisplay />
 
 <hr class="my-10 w-5/6 border-white/20 border rounded">
+
+{#if !ls_available}
+    <div class="bg-slate-600 border-3 border-slate-700 p-6 rounded-2xl flex flex-col align-center items-center">
+        <span class="text-2xl font-black">Warning: LocalStorage is not available.</span>
+        <span>
+            <span class="font-bold">What does this mean?:</span>
+            LocalStorage is what lets this website save things across sessions. Without it, none of your class data will save.
+        </span>
+    </div>
+{/if}
 
 <div class="relative bg-slate-800 border-3 border-slate-900 p-9 rounded-2xl">
     <button onclick={() => {show_new_modal = true}} class="bg-slate-100 border-3 border-slate-400 text-2xl text-black aspect-square size-10 rounded-2xl flex justify-center items-center transition hover:scale-120 absolute -top-3 -left-3">+</button>
