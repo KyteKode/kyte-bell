@@ -72,13 +72,46 @@
 
         show_edit_modal = false;
     }
+
+
+
+    // Dev menu handling
+    import { shortcut } from '@svelte-put/shortcut';
+
+    let dev_open: boolean = $state(false);
+
+    function open_dev_menu() {
+        dev_open = !dev_open;
+    }
+
+    async function nuke_localstorage() {
+        localStorage.removeItem("periods");
+        window.location.reload();
+    }
 </script>
+
+<svelte:window
+    use:shortcut={{
+        trigger: {
+            key: 'D',
+            modifier: "shift",
+            callback: open_dev_menu,
+        },
+    }}
+/>
 
 <h1>Bell Timer</h1>
 <a class="m-3 w-48 flex flex-col gap-1.5 items-center justify-center transition duration-500 hover:scale-125" href="https://github.com/KyteKode">
     <img class="rounded-2xl" alt="" src="https://avatars.githubusercontent.com/u/231786375?s=96&;v=4">
     Created by KyteKode
 </a>
+
+{#if dev_open}
+    <div class="bg-slate-600 border-3 border-slate-700 p-4 flex flex-col gap-3">
+        <h1>Developer Menu</h1>
+        <button onclick={nuke_localstorage} class="bg-slate-500 border-3 border-slate-800 p-2">Nuke the localstorage</button>
+    </div>
+{/if}
 
 <CurrentPeriodDisplay now={now} />
 
