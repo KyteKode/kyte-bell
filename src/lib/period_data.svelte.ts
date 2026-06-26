@@ -21,6 +21,8 @@ export default class PeriodData {
     other: Record<string, string> = $state({});
     name: string = $state("Class");
 
+    edit_idx: number | null = $state(null);
+
     valid: PeriodValidData = $derived(this.is_valid());
 
     constructor(start?: Time, end?: Time, other?: Record<string, string>, name?: string) {
@@ -71,7 +73,9 @@ export default class PeriodData {
         valid_data.no_time_overlap = true;
         valid_data.no_name_overlap = true;
 
-        for (const data of globals.periods) {
+        for (const [idx, data] of globals.periods.entries()) {
+            if (idx === this.edit_idx) continue;
+
             // Checks if time overlaps
             const this_start = this.start.to_minutes();
             const this_end = this.end.to_minutes();

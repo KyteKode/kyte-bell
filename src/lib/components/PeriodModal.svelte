@@ -2,15 +2,16 @@
     import TimeInput from "$lib/components/TimeInput.svelte";
 
     import type PeriodData from "$lib/period_data.svelte";
+    import type { Snippet } from "svelte";
 
     interface Props {
-        show: boolean,
         data: PeriodData,
-        submit_info: () => void
+        hide: () => void,
+        submit_info: () => void,
+        children?: Snippet
     }
 
-    // eslint-disable-next-line no-useless-assignment
-    let { show = $bindable(), data = $bindable(), submit_info }: Props = $props();
+    let { data = $bindable(), hide, submit_info, children }: Props = $props();
     let info_name: string = $state("");
 
     // Add extra user defined info
@@ -28,7 +29,7 @@
 </script>
 
 <div class="relative flex flex-col gap-5 bg-slate-600 border-3 border-slate-700 p-3 rounded-2xl w-sm">
-    <button onclick={() => {show = false}} class="bg-slate-100 border-3 border-slate-400 text-2xl text-black aspect-square size-10 rounded-2xl flex justify-center items-center transition hover:scale-120 absolute -top-3 -left-3">×</button>
+    <button onclick={hide} class="bg-slate-100 border-3 border-slate-400 text-2xl text-black aspect-square size-10 rounded-2xl flex justify-center items-center transition hover:scale-120 absolute -top-3 -left-3">×</button>
 
     <div class="grid grid-cols-[1fr_2fr] items-center justify-center gap-2">
         <span class="w-15 text-xl">Name:</span>
@@ -50,9 +51,9 @@
 
         <span class="w-15 text-xl">Other:</span>
         <span class="w-56 gap-3 flex items-center justify-center">
-                <input bind:value={info_name} class="min-w-0 h-12 rounded-2xl  text-slate-900 border-3 border-slate-400" type="text">
-                <button onclick={add_other_info} class="bg-slate-100 border-3 border-slate-400 text-2xl text-black aspect-square size-10 rounded-2xl flex justify-center items-center transition hover:scale-120">+</button>
-            </span>
+            <input bind:value={info_name} class="min-w-0 h-12 rounded-2xl  text-slate-900 border-3 border-slate-400" type="text">
+            <button onclick={add_other_info} class="bg-slate-100 border-3 border-slate-400 text-2xl text-black aspect-square size-10 rounded-2xl flex justify-center items-center transition hover:scale-120">+</button>
+        </span>
     </div>
 
     <div class="flex flex-col justify-center items-center gap-2">
@@ -81,6 +82,8 @@
                 {/if}
             </ul>
         {/if}
-        <button onclick={submit_info} class={`w-3/4 ${data.valid.overall ? "bg-blue-500 border-3 border-blue-800 text-2xl" : "bg-red-500 border-3 border-red-800 text-2xl"} rounded-2xl flex justify-center items-center transition hover:scale-120 ${data.valid.overall ? "hover:shadow-[0_0_20px_oklch(62.3%_0.214_259.815/0.6)]" : "hover:shadow-[0_0_20px_oklch(63.7%_0.237_25.331/0.6)]"}`}>Add</button>
+        <button onclick={submit_info} class={`w-3/4 ${data.valid.overall ? "bg-blue-500 border-3 border-blue-800 text-2xl" : "bg-red-500 border-3 border-red-800 text-2xl"} rounded-2xl flex justify-center items-center transition hover:scale-120 ${data.valid.overall ? "hover:shadow-[0_0_20px_oklch(62.3%_0.214_259.815/0.6)]" : "hover:shadow-[0_0_20px_oklch(63.7%_0.237_25.331/0.6)]"}`}>Confirm</button>
+
+        {@render children?.()}
     </div>
 </div>

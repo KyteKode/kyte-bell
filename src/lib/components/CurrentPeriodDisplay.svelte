@@ -1,8 +1,13 @@
 <script lang="ts">
     import {type CurrentPeriod, CurrentPeriodResult, get_current_period} from "$lib/current_period_type";
+    import Time from "$lib/time_type.svelte"
     import globals from "$lib/globals.svelte";
 
-    let now = globals.now;
+    interface Props {
+        now: Time
+    }
+
+    let { now }: Props = $props();
     let current: CurrentPeriod = $derived(get_current_period(now));
 </script>
 

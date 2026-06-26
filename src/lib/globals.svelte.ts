@@ -1,5 +1,4 @@
 import PeriodData from "$lib/period_data.svelte";
-import Time from "$lib/time_type.svelte";
 import { get_stored_periods, update_stored_periods } from "$lib/localstorage_updater";
 
 import { browser } from "$app/environment";
@@ -9,17 +8,6 @@ let _periods: PeriodData[] = $state([]);
 if (browser) {
     _periods = get_stored_periods() ?? [];
 }
-
-// Used as a depndency for the `now` variable
-let tick = $state(0);
-setInterval(() => {tick++}, 100);
-
-// Derived so it updates every second
-const _now: Time = $derived.by(() => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    tick;
-    return Time.now();
-});
 
 const globals = {
     get periods() { return _periods; },
@@ -32,7 +20,9 @@ const globals = {
         _periods.splice(idx, 1);
         update_stored_periods();
     },
-
-    get now() { return _now; }
+    periods_update(idx: number, data: PeriodData) {
+        _periods[idx] = data;
+        update_stored_periods();
+    }
 }
 export default globals;
