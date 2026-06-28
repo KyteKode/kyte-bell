@@ -6,6 +6,7 @@
 
 @theme {
     --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
+    --breakpoint-xs: 480px;
 }
 
 @layer base {

@@ -11,12 +11,12 @@
     let current: CurrentPeriod = $derived(get_current_period(now));
 </script>
 
-<div class="bg-slate-600 border-3 border-slate-700 p-6 rounded-2xl flex flex-col align-center items-center">
+<div class="bg-slate-600 border-2 border-slate-700 p-6 rounded-2xl flex flex-col align-center items-center">
     {#if current.kind == CurrentPeriodResult.Some}
         {@const data = globals.periods[current.current_idx]}
 
         <span>Current class:</span>
-        <span class="text-2xl font-black">{data.name}</span>
+        <span class="text-3xl font-black mb-3">{data.name}</span>
 
         <span>
             <span class="font-bold">Started:</span>
