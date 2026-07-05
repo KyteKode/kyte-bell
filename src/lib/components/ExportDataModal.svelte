@@ -21,7 +21,6 @@
 
 
     let successful_copy: boolean = $state(false);
-    let valid
 
     async function copy_data() {
         successful_copy = false;
@@ -31,6 +30,7 @@
             successful_copy = true;
         } catch {
             text_copy_icon = ClipboardDocumentList;
+            console.error("Copy failed.");
         }
     }
 

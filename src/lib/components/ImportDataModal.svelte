@@ -2,7 +2,7 @@
     import { Icon, ClipboardDocumentList, Check } from "svelte-hero-icons";
 
     import Store from "$lib/localstorage_handler";
-    import type {StorageSchema} from "$lib/storage_schemas.ts";
+    import { validate_data } from "$lib/storage_schemas";
 
     interface Props {
         hide: () => void
@@ -14,10 +14,11 @@
 
     const store = new Store();
 
-
+    let json_input: string = $state("");
 
     let successful_paste: boolean = $state(false);
-    let valid_paste: boolean = $state(false);
+    let has_data: boolean = $derived(json_input.trim() != "");
+    let valid_data: boolean = $derived(validate_data(json_input));
 
     async function paste_data() {
         successful_paste = false;
@@ -29,29 +30,18 @@
             successful_paste = true;
         } catch {
             text_paste_icon = ClipboardDocumentList;
-            return;
-        }
-
-        // Try/catch for JSON parsing
-        valid_paste = false;
-        try {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const parsed = JSON.parse(json_input);
-            valid_paste = true;
-        } catch {
+            console.error("Paste failed.");
             return;
         }
     }
 
     function finalize_import() {
-        if (!valid_paste) { return; }
+        if (!valid_data) { return; }
         store.set_item_raw("periods", json_input);
         window.location.reload();
     }
 
     let text_paste_icon = $state(ClipboardDocumentList);
-
-    let json_input: string = $state("");
 </script>
 
 <div class="relative gap-5 bg-slate-600 border-3 border-slate-700 p-3 rounded-2xl w-lg aspect-square flex flex-col items-center">
@@ -72,11 +62,11 @@
         </div>
     </div>
 
-    {#if !valid_paste}
+    {#if !valid_data}
         <h1>Invalid!</h1>
     {/if}
 
-    {#if successful_paste}
-        <button onclick={finalize_import} class="bg-blue-500 border-3 border-blue-800 text-2xl rounded-2xl flex justify-center items-center p-2 transition hover:scale-120 hover:shadow-[0_0_20px_oklch(62.3%_0.214_259.815/0.6)]">Import classes</button>
+    {#if has_data}
+        <button onclick={finalize_import} class={`w-3/4 ${valid_data ? "bg-blue-500 border-3 border-blue-800 text-2xl" : "bg-red-500 border-3 border-red-800 text-2xl"} rounded-2xl flex justify-center items-center transition hover:scale-120 ${valid_data ? "hover:shadow-[0_0_20px_oklch(62.3%_0.214_259.815/0.6)]" : "hover:shadow-[0_0_20px_oklch(63.7%_0.237_25.331/0.6)]"}`}>Import classes</button>
     {/if}
 </div>

@@ -1,0 +1,43 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Bell Time",
+    "description": "Schema to stop invalid imports",
+
+    "type": "array",
+    "items": { "$ref": "#/$defs/period" },
+
+    "$defs": {
+        "time": {
+            "type": "object",
+            "properties": {
+                "hour": { "type": "string", "pattern": "^(1[0-2]|[1-9])$"},
+                "minute": { "type": "string", "pattern": "^[0-5][0-9]$"},
+                "ampm": { "type": "integer", "enum":  [0, 1]}
+            },
+            "required": [
+                "hour",
+                "minute",
+                "ampm"
+            ],
+            "additionalProperties": false
+        },
+        "period": {
+            "type": "object",
+            "properties": {
+                "start": { "$ref": "#/$defs/time" },
+                "end": { "$ref": "#/$defs/time" },
+                "other": {
+                    "type": "object",
+                    "additionalProperties": { "type": "string" }
+                },
+                "name": { "type": "string" }
+            },
+            "required": [
+                "start",
+                "end",
+                "name"
+            ],
+            "additionalProperties": false
+        }
+    }
+}
