@@ -2,8 +2,9 @@
     import PeriodModal from "$lib/components/PeriodModal.svelte";
     import PeriodDataDisplay from "$lib/components/PeriodDataDisplay.svelte";
     import ExportDataModal from "$lib/components/ExportDataModal.svelte";
+    import ImportDataModal from "$lib/components/ImportDataModal.svelte";
     import ModalBlur from "$lib/components/ModalBlur.svelte";
-    import { Icon, ArrowDownTray } from "svelte-hero-icons";
+    import { Icon, ArrowDownTray, ArrowUpTray } from "svelte-hero-icons";
 
     import PeriodData from "$lib/period_data.svelte";
     import Time from "$lib/time_type.svelte";
@@ -80,12 +81,13 @@
 
     // Handles export/import modals
     let show_export_modal: boolean = $state(false);
+    let show_import_modal: boolean = $state(false);
 
 
 
     // Dev menu handling
     import { shortcut } from "@svelte-put/shortcut";
-    import { toggle_dev_menu, is_dev_open, nuke_ls, load_debug_data } from "$lib/dev.svelte"
+    import { toggle_dev_menu, is_dev_open, nuke_ls, load_debug_data } from "$lib/dev.svelte";
 </script>
 
 <svelte:window
@@ -145,11 +147,20 @@
 
 
 {#if ls_available}
-    <div class="flex justify-center items-center m-5">
-        <button onclick={() => show_export_modal = true} class="text-black bg-slate-100 border-2 border-slate-400 rounded-2xl p-2 flex justify-center items-center transition hover:scale-120">
-            <span class="w-40">Export Data</span>
-            <Icon src={ArrowDownTray} class="size-8 aspect-square" />
-        </button>
+    <div class="flex justify-center items-center">
+        <div class="flex justify-center items-center m-5">
+            <button onclick={() => show_export_modal = true} class="text-black bg-slate-100 border-2 border-slate-400 rounded-2xl p-2 flex justify-center items-center transition hover:scale-120">
+                <span class="w-40">Export Data</span>
+                <Icon src={ArrowDownTray} class="size-8 aspect-square" />
+            </button>
+        </div>
+
+        <div class="flex justify-center items-center m-5">
+            <button onclick={() => show_import_modal = true} class="text-black bg-slate-100 border-2 border-slate-400 rounded-2xl p-2 flex justify-center items-center transition hover:scale-120">
+                <span class="w-40">Import Data</span>
+                <Icon src={ArrowUpTray} class="size-8 aspect-square" />
+            </button>
+        </div>
     </div>
 {/if}
 
@@ -167,4 +178,8 @@
 
 <ModalBlur show={show_export_modal}>
     <ExportDataModal hide={() => show_export_modal = false} />
+</ModalBlur>
+
+<ModalBlur show={show_import_modal}>
+    <ImportDataModal hide={() => show_import_modal = false} />
 </ModalBlur>
