@@ -6,13 +6,13 @@ import PeriodData from "$lib/period_data.svelte";
 const store = new Store<StorageSchema>();
 
 export function update_stored_periods() {
-    store.setItem("periods",
+    store.set_item("periods",
         globals.periods.map(period => period.to_json_interface())
     );
 }
 
 export function get_stored_periods(): PeriodData[] {
-    const item = store.getItem("periods");
+    const item = store.get_item("periods");
     if (item == null) { return []; }
     return item.map(period => PeriodData.from_json_interface(period));
 }

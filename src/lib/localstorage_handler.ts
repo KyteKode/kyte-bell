@@ -3,7 +3,7 @@
 import { browser } from "$app/environment";
 
 export default class Store<S> {
-    private _stored: boolean;
+    private readonly _stored: boolean;
 
     constructor() {
         if (!browser) { this._stored = false; }
@@ -17,15 +17,23 @@ export default class Store<S> {
         }
     }
 
-    setItem<K extends keyof S & string>(key: K, value: S[K]) {
+    set_item<K extends keyof S & string>(key: K, value: S[K]) {
         localStorage.setItem(key, JSON.stringify(value));
     }
 
-    getItem<K extends keyof S & string>(key: K): S[K] | null {
+    get_item<K extends keyof S & string>(key: K): S[K] | null {
         const item = localStorage.getItem(key);
         if (item == null) { return null; }
 
         return JSON.parse(item);
+    }
+
+    set_item_raw(key: string, value: string) {
+        localStorage.setItem(key, value);
+    }
+
+    get_item_raw(key: string): string | null {
+        return localStorage.getItem(key);
     }
 
     get stored() {

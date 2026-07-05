@@ -1,6 +1,9 @@
 <script lang="ts">
     import PeriodModal from "$lib/components/PeriodModal.svelte";
     import PeriodDataDisplay from "$lib/components/PeriodDataDisplay.svelte";
+    import ExportDataModal from "$lib/components/ExportDataModal.svelte";
+    import ModalBlur from "$lib/components/ModalBlur.svelte";
+    import { Icon, ArrowDownTray } from "svelte-hero-icons";
 
     import PeriodData from "$lib/period_data.svelte";
     import Time from "$lib/time_type.svelte";
@@ -75,19 +78,14 @@
 
 
 
+    // Handles export/import modals
+    let show_export_modal: boolean = $state(false);
+
+
+
     // Dev menu handling
-    import { shortcut } from '@svelte-put/shortcut';
-
-    let dev_open: boolean = $state(false);
-
-    function open_dev_menu() {
-        dev_open = !dev_open;
-    }
-
-    async function nuke_localstorage() {
-        localStorage.removeItem("periods");
-        window.location.reload();
-    }
+    import { shortcut } from "@svelte-put/shortcut";
+    import { toggle_dev_menu, is_dev_open, nuke_ls, load_debug_data } from "$lib/dev.svelte"
 </script>
 
 <svelte:window
@@ -95,7 +93,7 @@
         trigger: {
             key: 'D',
             modifier: "shift",
-            callback: open_dev_menu,
+            callback: toggle_dev_menu,
         },
     }}
 />
@@ -106,10 +104,13 @@
     Created by KyteKode
 </a>
 
-{#if dev_open}
+{#if is_dev_open()}
     <div class="bg-slate-600 border-2 border-slate-700 p-4 flex flex-col gap-3">
         <h1>Developer Menu</h1>
-        <button onclick={nuke_localstorage} class="bg-slate-500 border-2 border-slate-800 p-2">Nuke the localstorage</button>
+        <p>Hello! If you have found this, you should probably refresh. These actions are irreversible and only made for testing purposes.</p>
+
+        <button onclick={nuke_ls} class="bg-slate-500 border-2 border-slate-800 p-2">Nuke the localstorage</button>
+        <button onclick={load_debug_data} class="bg-slate-500 border-2 border-slate-800 p-2">Load debug data</button>
     </div>
 {/if}
 
@@ -141,16 +142,29 @@
     </div>
 </div>
 
-{#if show_new_modal}
-    <div class="fixed top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] flex items-center justify-center bg-slate-950/75 backdrop-blur-sm min-w-screen min-h-screen">
-        <PeriodModal bind:data={new_period} hide={() => show_new_modal = false} submit_info={add_new_period} />
+
+
+{#if ls_available}
+    <div class="flex justify-center items-center m-5">
+        <button onclick={() => show_export_modal = true} class="text-black bg-slate-100 border-2 border-slate-400 rounded-2xl p-2 flex justify-center items-center transition hover:scale-120">
+            <span class="w-40">Export Data</span>
+            <Icon src={ArrowDownTray} class="size-8 aspect-square" />
+        </button>
     </div>
 {/if}
 
-{#if show_edit_modal}
-    <div class="fixed top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] flex items-center justify-center bg-slate-950/75 backdrop-blur-sm min-w-screen min-h-screen">
-        <PeriodModal bind:data={edited_period} hide={() => show_edit_modal = false} submit_info={apply_edit}>
-            <button onclick={delete_period} class="w-3/4 bg-red-500 border-2 border-red-800 text-2xl rounded-2xl flex justify-center items-center transition hover:scale-120 hover:shadow-[0_0_20px_oklch(63.7%_0.237_25.331/0.6)]">Delete</button>
-        </PeriodModal>
-    </div>
-{/if}
+
+
+<ModalBlur show={show_new_modal}>
+    <PeriodModal bind:data={new_period} hide={() => show_new_modal = false} submit_info={add_new_period} />
+</ModalBlur>
+
+<ModalBlur show={show_edit_modal}>
+    <PeriodModal bind:data={edited_period} hide={() => show_edit_modal = false} submit_info={apply_edit}>
+        <button onclick={delete_period} class="w-3/4 bg-red-500 border-2 border-red-800 text-2xl rounded-2xl flex justify-center items-center transition hover:scale-120 hover:shadow-[0_0_20px_oklch(63.7%_0.237_25.331/0.6)]">Delete</button>
+    </PeriodModal>
+</ModalBlur>
+
+<ModalBlur show={show_export_modal}>
+    <ExportDataModal hide={() => show_export_modal = false} />
+</ModalBlur>

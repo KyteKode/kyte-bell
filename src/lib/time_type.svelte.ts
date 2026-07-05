@@ -119,7 +119,7 @@ export default class Time {
     between(this: Time, start: Time, end: Time): boolean {
         if (!this.valid || !start.valid || !end.valid) return false;
 
-        return this.after_inclusive(start) && end.after_inclusive(this);
+        return this.after_inclusive(start) && end.after(this);
     }
 
     // Evaluates the time since a different time in seconds
