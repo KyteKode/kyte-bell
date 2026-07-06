@@ -17,6 +17,14 @@ export type CurrentPeriod =
     { kind: CurrentPeriodResult.InternalError }
 
 export function get_current_period(now: Time): CurrentPeriod {
+    // Checks if a current period was manually set in the dev menu
+    if (globals.dev_current_period != null) {
+        return {
+            kind: CurrentPeriodResult.Some,
+            current_idx: globals.dev_current_period
+        }
+    }
+
     // Checks if you're before the first period
     if (globals.periods[0]) {
         if (globals.periods[0].start.after(now)) {

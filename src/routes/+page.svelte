@@ -87,7 +87,7 @@
 
     // Dev menu handling
     import { shortcut } from "@svelte-put/shortcut";
-    import { toggle_dev_menu, is_dev_open, nuke_ls, load_debug_data } from "$lib/dev.svelte";
+    import * as dev from "$lib/dev.svelte";
 </script>
 
 <svelte:window
@@ -95,7 +95,7 @@
         trigger: {
             key: 'D',
             modifier: "shift",
-            callback: toggle_dev_menu,
+            callback: dev.toggle_dev_menu,
         },
     }}
 />
@@ -106,13 +106,18 @@
     Created by KyteKode
 </a>
 
-{#if is_dev_open()}
-    <div class="bg-slate-600 border-2 border-slate-700 p-4 flex flex-col gap-3">
+{#if dev.is_dev_open()}
+    <div class="bg-slate-600 border-2 border-slate-700 p-4 flex flex-col justify-center items-center gap-3">
         <h1>Developer Menu</h1>
-        <p>Hello! If you have found this, you should probably refresh. These actions are irreversible and only made for testing purposes.</p>
+        <p>Hello! If you have found this, you should probably refresh. These actions are only made for testing purposes. Red buttons are irreversible.</p>
 
-        <button onclick={nuke_ls} class="bg-slate-500 border-2 border-slate-800 p-2">Nuke the localstorage</button>
-        <button onclick={load_debug_data} class="bg-slate-500 border-2 border-slate-800 p-2">Load debug data</button>
+        <button onclick={dev.manual_current_period} class="w-full bg-slate-500 border-2 border-slate-800 p-2">Manually set current period</button>
+        <button onclick={globals.dev_current_period = null} class="w-full bg-slate-500 border-2 border-slate-800 p-2">Reset manual current period</button>
+
+        <hr class="my-4 w-5/6 border-white/20 border rounded">
+
+        <button onclick={dev.nuke_ls} class="w-full bg-red-500 border-2 border-red-800 p-2">Nuke the localstorage</button>
+        <button onclick={dev.load_debug_data} class="w-full bg-red-500 border-2 border-red-800 p-2">Load debug data</button>
     </div>
 {/if}
 

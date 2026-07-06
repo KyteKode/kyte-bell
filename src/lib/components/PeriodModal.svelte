@@ -28,7 +28,7 @@
     }
 </script>
 
-<div class="relative flex flex-col gap-5 bg-slate-600 border-3 border-slate-700 p-3 rounded-2xl w-sm">
+<div class="relative flex flex-col gap-5 bg-slate-600 border-3 border-slate-700 p-3 rounded-2xl w-lg">
     <button onclick={hide} class="bg-slate-100 border-3 border-slate-400 text-2xl text-black aspect-square size-10 rounded-2xl flex justify-center items-center transition hover:scale-120 absolute -top-3 -left-3">×</button>
 
     <div class="grid grid-cols-[1fr_2fr] items-center justify-center gap-2">
@@ -42,10 +42,10 @@
         <TimeInput bind:value={data.end} />
 
         {#each Object.entries(data.other) as [name] (name)}
-                <span class="flex flex-row justify-start items-center">
-                    <span class="w-15 text-xl">{name}:</span>
-                    <button onclick={() => {remove_other_info(name)}} class="bg-slate-100 border-3 border-slate-400 text-2xl text-black aspect-square size-10 rounded-2xl flex justify-center items-center transition hover:scale-120">-</button>
-                </span>
+            <span class="flex flex-row justify-start items-center">
+                <span class="w-32 text-xl wrap-break-word">{name}:</span>
+                <button onclick={() => {remove_other_info(name)}} class="bg-slate-100 border-3 border-slate-400 text-2xl text-black aspect-square size-10 rounded-2xl flex justify-center items-center transition hover:scale-120">-</button>
+            </span>
             <input bind:value={data.other[name]} class="min-w-0 h-12 rounded-2xl  text-slate-900 border-3 border-slate-400" type="text">
         {/each}
 

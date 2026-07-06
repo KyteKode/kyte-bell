@@ -22,7 +22,7 @@
         <Icon src={PencilSquare} />
     </button>
 
-    <span class="text-3xl font-black">{data.name}</span>
+    <span class="text-3xl font-black wrap-break-word">{data.name}</span>
 
     <span>
         <span class="font-bold">Start:</span>
@@ -36,8 +36,8 @@
 
     {#each Object.entries(data.other) as [key, other_data] (key)}
         <span>
-            <span class="font-bold">{key}:</span>
-            {other_data}
+            <span class="font-bold wrap-break-word">{key}:</span>
+            <span class="wrap-break-word">{other_data}</span>
         </span>
     {/each}
 </div>

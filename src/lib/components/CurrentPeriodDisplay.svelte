@@ -11,26 +11,26 @@
     let current: CurrentPeriod = $derived(get_current_period(now));
 </script>
 
-<div class="bg-slate-600 border-2 border-slate-700 p-6 rounded-2xl flex flex-col align-center items-center">
+<div class="bg-slate-600 border-2 border-slate-700 p-6 rounded-2xl flex flex-col justify-center items-center w-md">
     {#if current.kind == CurrentPeriodResult.Some}
         {@const data = globals.periods[current.current_idx]}
 
         <span>Current class:</span>
-        <span class="text-3xl font-black mb-3">{data.name}</span>
+        <span class="text-3xl font-black mb-3 wrap-break-word">{data.name}</span>
 
-        <span>
+        <span class="w-full flex justify-center items-center gap-1">
             <span class="font-bold">Started:</span>
             {now.time_since(data.start)} ago
         </span>
-        <span>
+        <span class="w-full flex justify-center items-center gap-1">
             <span class="font-bold">Ends in:</span>
             {now.time_until(data.end)}
         </span>
 
         {#each Object.entries(data.other) as [key, other_data] (key)}
-            <span>
-                <span class="font-bold">{key}:</span>
-                {other_data}
+            <span class="w-full flex justify-center items-center gap-1">
+                <span class="font-bold wrap-break-word">{key}:</span>
+                <span class="wrap-break-word">{other_data}</span>
             </span>
         {/each}
 
@@ -40,17 +40,17 @@
     {:else if current.kind == CurrentPeriodResult.Between}
         {@const data = globals.periods[current.next_idx]}
         <span>Next class:</span>
-        <span class="text-2xl font-bold">{data.name}</span>
+        <span class="text-2xl font-black mb-3 wrap-break-word">{data.name}</span>
 
-        <span>
+        <span class="w-full flex justify-center items-center gap-1">
             <span class="font-bold">Starts in:</span>
             {now.time_until(data.start)}
         </span>
 
         {#each Object.entries(data.other) as [key, other_data] (key)}
-            <span>
-                <span class="font-bold">{key}:</span>
-                {other_data}
+            <span class="w-full flex justify-center items-center gap-1">
+                <span class="font-bold wrap-break-word">{key}:</span>
+                <span class="wrap-break-word">{other_data}</span>
             </span>
         {/each}
 

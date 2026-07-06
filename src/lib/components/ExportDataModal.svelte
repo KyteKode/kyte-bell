@@ -31,7 +31,8 @@
     async function copy_data() {
         successful_copy = false;
         try {
-            await navigator.clipboard.writeText(get_json());
+            const text = mode == "bin" ? await get_bin() : get_json();
+            await navigator.clipboard.writeText(text);
             text_copy_icon = Check;
             successful_copy = true;
         } catch {
@@ -59,7 +60,7 @@
 
     <div class="flex flex-col justify-center items-center h-full w-full">
 
-        <span class="text-xl m-3">Copy this JSON.</span>
+        <span class="text-xl m-3">Copy this.</span>
         <div class="bg-slate-900 border-black border-3 w-11/12 h-full overflow-auto text-wrap p-3 font-mono rounded-2xl relative">
             <button onclick={copy_data} class:text-green-500={successful_copy} class="absolute right-4 top-3 rounded-2xl backdrop-blur-3xl transition hover:scale-120 bg-white/5 p-1">
                 <Icon src={text_copy_icon} class="size-10 aspect-square text-green" />

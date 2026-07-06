@@ -1,5 +1,6 @@
 import Store from "$lib/localstorage_handler";
 import type { StorageSchema } from "$lib/storage_schemas";
+import globals from  "$lib/globals.svelte";
 
 import debug_data from "$lib/assets/debug_data.json";
 
@@ -27,4 +28,25 @@ export function nuke_ls() {
 export function load_debug_data() {
     store.set_item("periods", debug_data);
     reload()
+}
+
+export function manual_current_period() {
+    const input = prompt("Current period index");
+
+    try {
+        const idx = Number(input);
+
+        if (
+            Number.isNaN(idx) ||
+            !Number.isInteger(idx) ||
+            idx < 0 ||
+            idx >= globals.periods.length
+        ) {
+            throw new Error();
+        }
+
+        globals.dev_current_period = idx;
+    } catch {
+        alert("Bad input")
+    }
 }

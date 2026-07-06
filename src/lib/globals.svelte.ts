@@ -5,6 +5,8 @@ import { browser } from "$app/environment";
 
 let _periods: PeriodData[] = $state([]);
 
+let _dev_current_period: number | null = $state(null);
+
 if (browser) {
     _periods = get_stored_periods() ?? [];
 }
@@ -24,6 +26,10 @@ const globals = {
         _periods[idx] = data;
         _periods.sort((a, b) => a.start.to_minutes() - b.start.to_minutes());
         update_stored_periods();
-    }
+    },
+
+    get dev_current_period() { return _dev_current_period; },
+    set dev_current_period(v: number | null) { _dev_current_period = v; }
 }
+
 export default globals;
