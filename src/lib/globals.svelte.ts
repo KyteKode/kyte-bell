@@ -22,6 +22,7 @@ const globals = {
     },
     periods_update(idx: number, data: PeriodData) {
         _periods[idx] = data;
+        _periods.sort((a, b) => a.start.to_minutes() - b.start.to_minutes());
         update_stored_periods();
     }
 }
