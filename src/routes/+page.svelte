@@ -4,6 +4,7 @@
     import ExportDataModal from "$lib/components/ExportDataModal.svelte";
     import ImportDataModal from "$lib/components/ImportDataModal.svelte";
     import ModalBlur from "$lib/components/ModalBlur.svelte";
+    import DebugMenu from "$lib/components/DebugMenu.svelte";
     import { Icon, ArrowDownTray, ArrowUpTray } from "svelte-hero-icons";
 
     import PeriodData from "$lib/period_data.svelte";
@@ -82,23 +83,7 @@
     // Handles export/import modals
     let show_export_modal: boolean = $state(false);
     let show_import_modal: boolean = $state(false);
-
-
-
-    // Dev menu handling
-    import { shortcut } from "@svelte-put/shortcut";
-    import * as dev from "$lib/dev.svelte";
 </script>
-
-<svelte:window
-    use:shortcut={{
-        trigger: {
-            key: 'D',
-            modifier: "shift",
-            callback: dev.toggle_dev_menu,
-        },
-    }}
-/>
 
 <h1>Bell Timer</h1>
 <a class="m-3 w-48 flex flex-col gap-1.5 items-center justify-center transition duration-500 hover:scale-125" href="https://github.com/KyteKode">
@@ -106,20 +91,7 @@
     Created by KyteKode
 </a>
 
-{#if dev.is_dev_open()}
-    <div class="bg-slate-600 border-2 border-slate-700 p-4 flex flex-col justify-center items-center gap-3">
-        <h1>Developer Menu</h1>
-        <p>Hello! If you have found this, you should probably refresh. These actions are only made for testing purposes. Red buttons are irreversible.</p>
-
-        <button onclick={dev.manual_current_period} class="w-full bg-slate-500 border-2 border-slate-800 p-2">Manually set current period</button>
-        <button onclick={globals.dev_current_period = null} class="w-full bg-slate-500 border-2 border-slate-800 p-2">Reset manual current period</button>
-
-        <hr class="my-4 w-5/6 border-white/20 border rounded">
-
-        <button onclick={dev.nuke_ls} class="w-full bg-red-500 border-2 border-red-800 p-2">Nuke the localstorage</button>
-        <button onclick={dev.load_debug_data} class="w-full bg-red-500 border-2 border-red-800 p-2">Load debug data</button>
-    </div>
-{/if}
+<DebugMenu />
 
 <CurrentPeriodDisplay now={now} />
 

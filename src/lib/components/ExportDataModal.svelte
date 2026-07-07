@@ -3,7 +3,7 @@
 
     import Store from "$lib/localstorage_handler";
     import type { StorageSchema } from "$lib/storage_schemas";
-    import { to_base64 } from "$lib/bin_convert";
+    import { to_binary } from "$lib/bin_convert";
 
     interface Props {
         hide: () => void
@@ -21,7 +21,7 @@
 
     async function get_bin(): Promise<string> {
         const periods: StorageSchema = { periods: store.get_item("periods") ?? [] };
-        return to_base64(periods);
+        return to_binary(periods);
     }
 
 
