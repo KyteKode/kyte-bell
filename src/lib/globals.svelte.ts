@@ -3,19 +3,38 @@ import { get_stored_periods, update_stored_periods } from "$lib/localstorage_upd
 
 import { browser } from "$app/environment";
 
-let _periods: PeriodData[] = $state([]);
+const _periods: PeriodData[] = $state(
+    browser ?
+        get_stored_periods() ?? [] :
+        []
+);
 
-let _dev_current_period: number | null = $state(null);
+const _common_other: Record<string, number> = $derived.by(() => {
+    const updated: Record<string, number> = {};
 
-if (browser) {
-    _periods = get_stored_periods() ?? [];
-}
+    for (const period of _periods) {
+        for (const key in period.other) {
+            if (!updated[key]) {
+                updated[key] = 0;
+            }
+
+            updated[key] += 1;
+        }
+    }
+
+    return Object.fromEntries(
+        Object.entries(updated)
+            .filter( ([, freq]) => freq >= 3 )
+    );
+});
+
+let _dev_current_period: number | null = null;
 
 const globals = {
     get periods() { return _periods; },
     periods_push(data: PeriodData) {
         _periods.push(data);
-        _periods.sort((a, b) => a.start.to_minutes() - b.start.to_minutes());
+        sort_periods();
         update_stored_periods();
     },
     periods_delete(idx: number) {
@@ -24,12 +43,20 @@ const globals = {
     },
     periods_update(idx: number, data: PeriodData) {
         _periods[idx] = data;
-        _periods.sort((a, b) => a.start.to_minutes() - b.start.to_minutes());
+        sort_periods();
         update_stored_periods();
     },
 
+    get common_other() { return _common_other; },
+
+
+
     get dev_current_period() { return _dev_current_period; },
     set dev_current_period(v: number | null) { _dev_current_period = v; }
+}
+
+function sort_periods() {
+    _periods.sort((a, b) => a.start.to_minutes() - b.start.to_minutes());
 }
 
 export default globals;
