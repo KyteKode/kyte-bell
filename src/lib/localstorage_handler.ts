@@ -1,42 +1,68 @@
 // i would use typed-local-storage, but it wasnt working for some reason ;-;
 
+import { ZStoredData } from "$lib/storage_schemas";
+
 import { browser } from "$app/environment";
 
-export default class Store<S> {
-    private readonly _stored: boolean;
+export enum StoreType {
+    NoStore,
+    LocalStore,
+}
+
+export default class Store {
+    readonly #store_type: StoreType;
 
     constructor() {
-        if (!browser) { this._stored = false; }
+        if (!browser) { this.#store_type = StoreType.NoStore; }
 
         try {
             localStorage.setItem("testKey", "testVal");
             localStorage.removeItem("testKey");
-            this._stored = true;
+            this.#store_type = StoreType.NoStore;
         } catch {
-            this._stored = false;
+            this.#store_type = StoreType.NoStore;
         }
     }
 
-    set_item<K extends keyof S & string>(key: K, value: S[K]) {
-        localStorage.setItem(key, JSON.stringify(value));
+    set stored(value: ZStoredData) {
+        localStorage.setItem("periods", JSON.stringify(value));
     }
 
-    get_item<K extends keyof S & string>(key: K): S[K] | null {
-        const item = localStorage.getItem(key);
-        if (item == null) { return null; }
+    get stored(): ZStoredData {
+        const raw = localStorage.getItem("periods");
 
-        return JSON.parse(item);
+        if (raw == null) {
+            return {
+                version: 0,
+                periods: []
+            };
+        }
+
+        const data = JSON.parse(raw);
+
+        const v0 = ZStoredData.safeParse(data);
+
+        if (v0.success) {
+            return v0.data;
+        }
+
+        return {
+            version: 0,
+            periods: []
+        };
     }
 
-    set_item_raw(key: string, value: string) {
-        localStorage.setItem(key, value);
+    set stored_string(value: string) {
+        const data = JSON.parse(value);
+
+        const v0 = ZStoredData.safeParse(data);
+
+        if (v0.success) {
+            localStorage.setItem("periods", value);
+        }
     }
 
-    get_item_raw(key: string): string | null {
-        return localStorage.getItem(key);
-    }
-
-    get stored() {
-        return this._stored;
+    get store_type() {
+        return this.#store_type;
     }
 }

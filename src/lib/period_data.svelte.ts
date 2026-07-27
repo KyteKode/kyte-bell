@@ -1,7 +1,7 @@
 import Time from "$lib/time_type.svelte";
 import PeriodValidData from "$lib/period_valid_data.svelte"
 import globals from "$lib/globals.svelte";
-import type { JSONPeriodData } from "$lib/storage_schemas";
+import type { ZPeriodData } from "$lib/storage_schemas";
 
 function latest_end() {
     let latest: Time | null = null;
@@ -89,19 +89,19 @@ export default class PeriodData {
         return valid_data;
     }
 
-    to_json_interface(this: PeriodData): JSONPeriodData {
+    to_zod(this: PeriodData): ZPeriodData {
         return {
-            start: this.start.to_json_interface(),
-            end: this.end.to_json_interface(),
+            start: this.start.to_zod(),
+            end: this.end.to_zod(),
             other: this.other,
             name: this.name
         }
     }
 
-    static from_json_interface(data: JSONPeriodData) {
+    static from_zod(data: ZPeriodData) {
         return new PeriodData(
-            Time.from_json_interface(data.start),
-            Time.from_json_interface(data.end),
+            Time.from_zod(data.start),
+            Time.from_zod(data.end),
             data.other,
             data.name
         );;

@@ -1,9 +1,7 @@
 import { get_bin_layout, layout_length } from "$lib/bin_layout";
-import type { JSONTime, JSONPeriodData, StorageSchema } from "$lib/storage_schemas";
+import type { ZStoredData, ZPeriodData, ZTime } from "$lib/storage_schemas";
 import { LayoutElementKind } from "$lib/layout_element";
 import { AMPM } from "$lib/time_type.svelte";
-
-
 
 import { Base91 } from "@hpcc-js/wasm-base91";
 const base91 = await Base91.load();
@@ -12,13 +10,21 @@ import { Zstd } from "@hpcc-js/wasm-zstd";
 const zstd = await Zstd.load();
 zstd.setCompressionLevel(12);
 
-
-
 const text_decoder = new TextDecoder();
 
+export type DecodedOption<T> =
+    { some: true, data: T } |
+    { some: false };
 
+function some<T>(data: T): DecodedOption<T> {
+    return { some: true, data };
+}
 
-export async function to_binary(data: StorageSchema): Promise<string> {
+export function none(): DecodedOption<never> {
+    return { some: false };
+}
+
+export async function to_binary(data: ZStoredData): Promise<string> {
     const layout = get_bin_layout(data);
     const length = layout_length(layout);
 
@@ -59,7 +65,7 @@ export async function to_binary(data: StorageSchema): Promise<string> {
 
 
 
-export async function from_binary(encoded: string): Promise<StorageSchema | null> {
+export async function from_binary(encoded: string): Promise<DecodedOption<ZStoredData>> {
     const decoded = base91.decode(encoded);
     const decompressed = zstd.decompress(decoded);
     const data_view = new DataView(decompressed.buffer);
@@ -67,43 +73,40 @@ export async function from_binary(encoded: string): Promise<StorageSchema | null
     if (
         data_view.getBigUint64(0) != 0x4B59544542454C4Cn || // KYTEBELL
         data_view.getUint8(8) != 0) {
-        return null;
+        return none();
     }
 
-    // Not const so it can be mutated in decode_period and decode_time
-    // eslint-disable-next-line prefer-const
     let offset = 13; // KYTEBELL (8) + Version (1) + Period Amount (4)
-    const stored_data: StorageSchema = {periods: []};
+    const stored_data: ZStoredData = { version: 0, periods: [] };
 
     const period_amount = data_view.getUint32(9);
     for (let i = 0; i < period_amount; i++) {
-        const period = decode_period(data_view, decompressed, offset);
-        if (period == null) { return null; }
+        const period_result = decode_period(data_view, decompressed, offset);
+        if (!period_result.some) { return none(); }
+        const period = period_result.data;
 
         stored_data.periods.push(period[0]);
         offset = period[1];
     }
 
-    return stored_data;
+    return some(stored_data);
 }
 
-export function decode_period(data_view: DataView, uint8_view: Uint8Array, offset: number): [JSONPeriodData, number] | null {
-    const start = decode_time({
+export function decode_period(data_view: DataView, uint8_view: Uint8Array, offset: number): DecodedOption<[ZPeriodData, number]> {
+    const start_result = decode_time({
         data: data_view,
         offset: offset
     });
-    if (start == null) {
-        return null;
-    }
+    if (!start_result.some) { return none(); }
+    const start = start_result.data;
     offset += 2;
 
-    const end = decode_time({
+    const end_result = decode_time({
         data: data_view,
         offset: offset
     });
-    if (end == null) {
-        return null;
-    }
+    if (!end_result.some) { return none(); }
+    const end = end_result.data;
     offset += 2;
 
     const name_length = data_view.getUint32(offset);
@@ -130,10 +133,13 @@ export function decode_period(data_view: DataView, uint8_view: Uint8Array, offse
         other[key_data] = value_data;
     }
 
-    return [{ start, end, other, name }, offset];
+    return some([
+        { start, end, other, name },
+        offset
+    ]);
 }
 
-function decode_time(model: { data: DataView, offset: number }): JSONTime | null {
+function decode_time(model: { data: DataView, offset: number }): DecodedOption<ZTime> {
     const byte1 = model.data.getUint8(model.offset);
 
     let ampm: AMPM;
@@ -148,17 +154,17 @@ function decode_time(model: { data: DataView, offset: number }): JSONTime | null
 
     hour >>= 1;
     if (hour == 0 || hour >= 13) {
-        return null;
+        return none();
     }
 
     const minute = model.data.getUint8(model.offset + 1);
     if (minute >= 60) {
-        return null;
+        return none();
     }
 
-    return {
+    return some({
         hour: hour.toString(),
         minute: minute.toString(),
         ampm
-    };
+    });
 }

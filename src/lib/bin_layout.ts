@@ -1,4 +1,4 @@
-import type {JSONPeriodData, JSONTime, StorageSchema} from "$lib/storage_schemas";
+import type { ZStoredData, ZPeriodData, ZTime } from "$lib/storage_schemas";
 
 import {
     layout_magic,
@@ -36,7 +36,7 @@ export function layout_length(layout: LayoutElement[]): number {
     return length;
 }
 
-export function get_bin_layout(data: StorageSchema): LayoutElement[] {
+export function get_bin_layout(data: ZStoredData): LayoutElement[] {
     const layout: LayoutElement[] = [
         // Magic number
         layout_magic(),
@@ -53,8 +53,8 @@ export function get_bin_layout(data: StorageSchema): LayoutElement[] {
     return layout;
 }
 
-function period_bin_layout(period: JSONPeriodData): LayoutElement[] {
-    const other_entries = Object.entries(period.other);
+function period_bin_layout(period: ZPeriodData): LayoutElement[] {
+    const other_entries = Object.entries(period.other ?? {});
 
     const layout: LayoutElement[] = [
         ...time_bin_layout(period.start),
@@ -79,7 +79,7 @@ function period_bin_layout(period: JSONPeriodData): LayoutElement[] {
     return layout;
 }
 
-function time_bin_layout(time: JSONTime): LayoutElement[] {
+function time_bin_layout(time: ZTime): LayoutElement[] {
     const byte1 = (Number(time.hour) << 1) + time.ampm;
     const byte2 = Number(time.minute);
     return [

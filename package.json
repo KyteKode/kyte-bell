@@ -38,6 +38,7 @@
 		"@hpcc-js/wasm-base91": "^1.14.4",
 		"@hpcc-js/wasm-zstd": "^1.13.4",
 		"ajv": "^8.20.0",
-		"ajv-formats": "^3.0.1"
+		"ajv-formats": "^3.0.1",
+		"zod": "^4.4.3"
 	}
 }

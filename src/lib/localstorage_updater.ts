@@ -1,24 +1,18 @@
-import type { StorageSchema } from "$lib/storage_schemas";
-import Store from "$lib/localstorage_handler";
+import Store, {StoreType} from "$lib/localstorage_handler";
 import globals from "$lib/globals.svelte";
 import PeriodData from "$lib/period_data.svelte";
 
-const store = new Store<StorageSchema>();
+const store = new Store();
+export const ls_available = store.store_type == StoreType.LocalStore;
 
 export function update_stored_periods() {
-    store.set_item("periods",
-        globals.periods.map(period => period.to_json_interface())
-    );
+    store.stored = {
+        version: 0,
+        periods: globals.periods.map(period => period.to_zod())
+    };
 }
 
 export function get_stored_periods(): PeriodData[] {
-    const item = store.get_item("periods");
-    if (item == null) { return []; }
-    return item.map(period => PeriodData.from_json_interface(period));
+    return store.stored.periods
+        .map(period => PeriodData.from_zod(period));
 }
-
-function check_ls_available(): boolean {
-    return store.stored;
-}
-
-export const ls_available = check_ls_available();

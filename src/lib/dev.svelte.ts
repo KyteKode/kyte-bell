@@ -1,12 +1,11 @@
 import Store from "$lib/localstorage_handler";
-import type { StorageSchema } from "$lib/storage_schemas";
 import globals from  "$lib/globals.svelte";
 import { from_binary } from "$lib/bin_convert";
 
 import debug_json from "$lib/assets/debug_json.json";
 import debug_base91 from "$lib/assets/debug_base91.txt?raw";
 
-const store = new Store<StorageSchema>();
+const store = new Store();
 
 let dev_open: boolean = $state(false);
 
@@ -28,18 +27,17 @@ export function nuke_ls() {
 }
 
 export function load_debug_json() {
-
-    store.set_item("periods", debug_json);
+    store.stored = debug_json;
     reload();
 }
 
 export async function load_debug_base91() {
-    const data = await from_binary(debug_base91);
-    if (data == null) {
+    const data_result = await from_binary(debug_base91);
+    if (!data_result.some) {
         alert("Could not decode");
         return;
     }
-    store.set_item("periods", data.periods);
+    store.stored = data_result.data;
     reload();
 }
 
@@ -55,7 +53,7 @@ export function manual_current_period() {
             idx < 0 ||
             idx >= globals.periods.length
         ) {
-            throw new Error();
+            new Error();
         }
 
         globals.dev_current_period = idx;

@@ -1,4 +1,4 @@
-import type { JSONTime } from "$lib/storage_schemas";
+import type { ZTime } from "$lib/storage_schemas";
 
 export default class Time {
     valid: boolean = $derived(
@@ -51,7 +51,7 @@ export default class Time {
 
     private second: number = $state(0); // used only for time_until and time_since
 
-    to_json_interface(this: Time): JSONTime {
+    to_zod(this: Time): ZTime {
         return {
             hour: this.hour,
             minute: this.minute,
@@ -59,9 +59,8 @@ export default class Time {
         }
     }
 
-    static from_json_interface(data: JSONTime) {
-        const inst = new Time(data.hour, data.minute, data.ampm);
-        return inst;
+    static from_zod(data: ZTime) {
+        return new Time(data.hour, data.minute, data.ampm);
     }
 
     static now() {

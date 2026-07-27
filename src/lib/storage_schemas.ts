@@ -1,35 +1,24 @@
-import type { AMPM } from "$lib/time_type.svelte";
+import { AMPM } from "$lib/time_type.svelte";
 
-import Ajv from "ajv/dist/2020";
-import addFormats from "ajv-formats";
-import JSONSchema from "$lib/assets/data_schema.json";
+import * as z from "zod";
 
-const ajv = new Ajv();
-addFormats(ajv);
-const validate = ajv.compile(JSONSchema);
+export const ZTime = z.object({
+    hour: z.string().regex(/^(1[0-2]|[1-9])$/),
+    minute: z.string().regex(/^[0-5][0-9]$/),
+    ampm: z.enum(AMPM),
+});
+export type ZTime = z.infer<typeof ZTime>;
 
-export interface StorageSchema {
-    periods: JSONPeriodData[]
-}
+export const ZPeriodData = z.object({
+    name: z.string(),
+    start: ZTime,
+    end: ZTime,
+    other: z.record(z.string(), z.string()).optional(),
+});
+export type ZPeriodData = z.infer<typeof ZPeriodData>;
 
-export interface JSONTime {
-    hour: string,
-    minute: string,
-    ampm: AMPM
-}
-
-export interface JSONPeriodData {
-    start: JSONTime,
-    end: JSONTime,
-    other: Record<string, string>,
-    name: string
-}
-
-export function validate_data(data: string): boolean {
-    try {
-        const parsed = JSON.parse(data);
-        return validate(parsed);
-    } catch {
-        return false;
-    }
-}
+export const ZStoredData = z.object({
+    version: z.literal(0).optional(),
+    periods: z.array(ZPeriodData)
+});
+export type ZStoredData = z.infer<typeof ZStoredData>;
