@@ -1,28 +1,18 @@
-import { get_bin_layout, layout_length } from "$lib/bin_layout";
-import type { ZStoredData, ZPeriodData, ZTime } from "$lib/storage_schemas";
-import { LayoutElementKind } from "$lib/layout_element";
-import { AMPM } from "$lib/time_type.svelte";
+import {get_bin_layout, layout_length} from "$lib/bin_layout";
+import type {ZPeriodData, ZStoredData, ZTime} from "$lib/storage_schemas";
+import {LayoutElementKind} from "$lib/layout_element";
+import {AMPM} from "$lib/time_type.svelte";
 
-import { Base91 } from "@hpcc-js/wasm-base91";
+import {Base91} from "@hpcc-js/wasm-base91";
+import {Zstd} from "@hpcc-js/wasm-zstd";
+import { type Option, none, some } from "$lib/option";
+
 const base91 = await Base91.load();
 
-import { Zstd } from "@hpcc-js/wasm-zstd";
 const zstd = await Zstd.load();
 zstd.setCompressionLevel(12);
 
 const text_decoder = new TextDecoder();
-
-export type DecodedOption<T> =
-    { some: true, data: T } |
-    { some: false };
-
-function some<T>(data: T): DecodedOption<T> {
-    return { some: true, data };
-}
-
-export function none(): DecodedOption<never> {
-    return { some: false };
-}
 
 export async function to_binary(data: ZStoredData): Promise<string> {
     const layout = get_bin_layout(data);
@@ -65,7 +55,7 @@ export async function to_binary(data: ZStoredData): Promise<string> {
 
 
 
-export async function from_binary(encoded: string): Promise<DecodedOption<ZStoredData>> {
+export async function from_binary(encoded: string): Promise<Option<ZStoredData>> {
     const decoded = base91.decode(encoded);
     const decompressed = zstd.decompress(decoded);
     const data_view = new DataView(decompressed.buffer);
@@ -92,7 +82,7 @@ export async function from_binary(encoded: string): Promise<DecodedOption<ZStore
     return some(stored_data);
 }
 
-export function decode_period(data_view: DataView, uint8_view: Uint8Array, offset: number): DecodedOption<[ZPeriodData, number]> {
+export function decode_period(data_view: DataView, uint8_view: Uint8Array, offset: number): Option<[ZPeriodData, number]> {
     const start_result = decode_time({
         data: data_view,
         offset: offset
@@ -139,7 +129,7 @@ export function decode_period(data_view: DataView, uint8_view: Uint8Array, offse
     ]);
 }
 
-function decode_time(model: { data: DataView, offset: number }): DecodedOption<ZTime> {
+function decode_time(model: { data: DataView, offset: number }): Option<ZTime> {
     const byte1 = model.data.getUint8(model.offset);
 
     let ampm: AMPM;

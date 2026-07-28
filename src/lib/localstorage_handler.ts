@@ -9,6 +9,13 @@ export enum StoreType {
     LocalStore,
 }
 
+function default_stored(): ZStoredData {
+    return {
+        version: 0,
+        periods: []
+    };
+}
+
 export default class Store {
     readonly #store_type: StoreType;
 
@@ -18,24 +25,24 @@ export default class Store {
         try {
             localStorage.setItem("testKey", "testVal");
             localStorage.removeItem("testKey");
-            this.#store_type = StoreType.NoStore;
+            this.#store_type = StoreType.LocalStore;
         } catch {
             this.#store_type = StoreType.NoStore;
         }
     }
 
     set stored(value: ZStoredData) {
+        if (this.#store_type === StoreType.NoStore) { return; }
         localStorage.setItem("periods", JSON.stringify(value));
     }
 
     get stored(): ZStoredData {
+        if (this.#store_type === StoreType.NoStore) { return default_stored(); }
+
         const raw = localStorage.getItem("periods");
 
         if (raw == null) {
-            return {
-                version: 0,
-                periods: []
-            };
+            return default_stored();
         }
 
         const data = JSON.parse(raw);
@@ -46,13 +53,12 @@ export default class Store {
             return v0.data;
         }
 
-        return {
-            version: 0,
-            periods: []
-        };
+        return default_stored();
     }
 
     set stored_string(value: string) {
+        if (this.#store_type === StoreType.NoStore) { return; }
+
         const data = JSON.parse(value);
 
         const v0 = ZStoredData.safeParse(data);

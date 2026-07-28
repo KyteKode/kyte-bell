@@ -2,7 +2,6 @@
     import { Icon, ClipboardDocumentList, Check } from "svelte-hero-icons";
 
     import Store from "$lib/localstorage_handler";
-    import type { StorageSchema } from "$lib/storage_schemas";
     import { to_binary } from "$lib/bin_convert";
 
     interface Props {
@@ -13,15 +12,14 @@
 
 
 
-    const store = new Store<StorageSchema>();
+    const store = new Store();
 
     function get_json(): string {
-        return store.get_item_raw("periods") ?? "[]";
+        return JSON.stringify(store.stored);
     }
 
     async function get_bin(): Promise<string> {
-        const periods: StorageSchema = { periods: store.get_item("periods") ?? [] };
-        return to_binary(periods);
+        return to_binary(store.stored);
     }
 
 

@@ -2,8 +2,9 @@
     import { Icon, ClipboardDocumentList, Check } from "svelte-hero-icons";
 
     import Store from "$lib/localstorage_handler";
-    import { type StorageSchema, validate_data } from "$lib/storage_schemas";
+    import { ZStoredData } from "$lib/storage_schemas";
     import { from_binary } from "$lib/bin_convert";
+    import { type Option, none, some } from "$lib/option";
 
     interface Props {
         hide: () => void
@@ -11,11 +12,9 @@
 
     let { hide }: Props = $props();
 
-
-
     let mode: "json" | "bin" = $state("bin");
 
-    const store = new Store<StorageSchema>();
+    const store = new Store();
 
     let input: string = $state("");
 
@@ -37,22 +36,25 @@
         }
     }
 
-    async function valid_bin() {
-        return (await from_binary(input)) != null;
+    async function valid_bin(): Promise<Option<ZStoredData>> {
+        return await from_binary(input);
     }
 
-    function valid_json() {
-        return validate_data(input);
+    function valid_json(): Option<ZStoredData> {
+        try {
+            const json = JSON.parse(input);
+            return some(ZStoredData.parse(json));
+        } catch {
+            return none();
+        }
     }
 
     async function finalize_import() {
-        if (mode == "bin") {
-            if (!(await valid_bin())) { return; }
-            store.set_item("periods", (await from_binary(input) as StorageSchema).periods);
-        } else {
-            if (!valid_json()) { return; }
-            store.set_item_raw("periods", input);
-        }
+        const decoded_result = mode == "bin" ? await valid_bin() : valid_json();
+
+        if (!decoded_result.some) { return; }
+        store.stored = decoded_result.data;
+
         window.location.reload();
     }
 
@@ -96,7 +98,7 @@
             {/await}
         {/if}
     {:else}
-        {#if !valid_json()}
+        {#if !valid_json}
             <h1>Invalid!</h1>
         {/if}
         {#if has_data}
