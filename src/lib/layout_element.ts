@@ -13,18 +13,18 @@ export type LayoutElement =
 
 
 
-export function layout_magic(): LayoutElement {
+export function layoutMagic(): LayoutElement {
     return { kind: LayoutElementKind.Magic, data: "KYTEBELL" };
 }
 
-export function layout_uint8(data: number): LayoutElement {
+export function layoutUint8(data: number): LayoutElement {
     return { kind: LayoutElementKind.Uint8, data };
 }
 
-export function layout_uint32(data: number): LayoutElement {
+export function layoutUint32(data: number): LayoutElement {
     return { kind: LayoutElementKind.Uint32, data };
 }
 
-export function layout_utf8string(data: string): LayoutElement {
+export function layoutUtf8String(data: string): LayoutElement {
     return { kind: LayoutElementKind.Utf8String, data };
 }

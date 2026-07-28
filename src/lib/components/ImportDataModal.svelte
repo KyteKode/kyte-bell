@@ -3,7 +3,7 @@
 
     import Store from "$lib/localstorage_handler";
     import { ZStoredData } from "$lib/storage_schemas";
-    import { from_binary } from "$lib/bin_convert";
+    import { fromBinary } from "$lib/bin_convert";
     import { type Option, none, some } from "$lib/option";
 
     interface Props {
@@ -18,29 +18,29 @@
 
     let input: string = $state("");
 
-    let successful_paste: boolean = $state(false);
-    let has_data: boolean = $derived(input.trim() != "");
+    let successfulPaste: boolean = $state(false);
+    let hasData: boolean = $derived(input.trim() != "");
 
-    async function paste_data() {
-        successful_paste = false;
+    async function pasteData() {
+        successfulPaste = false;
 
         // Try/catch for clipboard
         try {
             input = await navigator.clipboard.readText();
-            text_paste_icon = Check;
-            successful_paste = true;
+            textPasteIcon = Check;
+            successfulPaste = true;
         } catch {
-            text_paste_icon = ClipboardDocumentList;
+            textPasteIcon = ClipboardDocumentList;
             console.error("Paste failed.");
             return;
         }
     }
 
-    async function valid_bin(): Promise<Option<ZStoredData>> {
-        return await from_binary(input);
+    async function validBin(): Promise<Option<ZStoredData>> {
+        return await fromBinary(input);
     }
 
-    function valid_json(): Option<ZStoredData> {
+    function validJSON(): Option<ZStoredData> {
         try {
             const json = JSON.parse(input);
             return some(ZStoredData.parse(json));
@@ -49,16 +49,16 @@
         }
     }
 
-    async function finalize_import() {
-        const decoded_result = mode == "bin" ? await valid_bin() : valid_json();
+    async function finalizeImport() {
+        const decodedResult = mode == "bin" ? await validBin() : validJSON();
 
-        if (!decoded_result.some) { return; }
-        store.stored = decoded_result.data;
+        if (!decodedResult.some) { return; }
+        store.stored = decodedResult.data;
 
         window.location.reload();
     }
 
-    let text_paste_icon = $state(ClipboardDocumentList);
+    let textPasteIcon = $state(ClipboardDocumentList);
 </script>
 
 <div class="relative gap-5 bg-slate-600 border-3 border-slate-700 p-3 rounded-2xl w-lg aspect-square flex flex-col items-center">
@@ -76,8 +76,8 @@
     <div class="flex flex-col justify-center items-center h-full w-full">
         <span class="text-xl m-3">Paste the data here.</span>
         <div class="bg-slate-900 border-black border-3 w-11/12 overflow-auto h-full text-wrap p-3 font-mono rounded-2xl relative">
-            <button onclick={paste_data} class:text-green-500={successful_paste} class="absolute top-3 right-4 rounded-2xl bg-transparent transition hover:scale-120 hover:bg-white/20 p-1">
-                <Icon src={text_paste_icon} class="size-10 aspect-square text-green" />
+            <button onclick={pasteData} class:text-green-500={successfulPaste} class="absolute top-3 right-4 rounded-2xl bg-transparent transition hover:scale-120 hover:bg-white/20 p-1">
+                <Icon src={textPasteIcon} class="size-10 aspect-square text-green" />
             </button>
 
             <textarea bind:value={input} class="w-full h-full bg-slate-900 border-0"></textarea>
@@ -85,24 +85,24 @@
     </div>
 
     {#if mode == "bin"}
-        {#if has_data}
-            {#await valid_bin()}
+        {#if hasData}
+            {#await validBin()}
             {:then valid}
                 {#if !valid}
                     <h1>Invalid!</h1>
                 {/if}
-                <button onclick={finalize_import} class={`w-3/4 ${valid ? "bg-blue-500 border-3 border-blue-800 text-2xl" : "bg-red-500 border-3 border-red-800 text-2xl"} rounded-2xl flex justify-center items-center transition hover:scale-120 ${valid ? "hover:shadow-[0_0_20px_oklch(62.3%_0.214_259.815/0.6)]" : "hover:shadow-[0_0_20px_oklch(63.7%_0.237_25.331/0.6)]"}`}>Import classes</button>
+                <button onclick={finalizeImport} class={`w-3/4 ${valid ? "bg-blue-500 border-3 border-blue-800 text-2xl" : "bg-red-500 border-3 border-red-800 text-2xl"} rounded-2xl flex justify-center items-center transition hover:scale-120 ${valid ? "hover:shadow-[0_0_20px_oklch(62.3%_0.214_259.815/0.6)]" : "hover:shadow-[0_0_20px_oklch(63.7%_0.237_25.331/0.6)]"}`}>Import classes</button>
             {:catch}
                 <h1>Invalid!</h1>
-                <button onclick={finalize_import} class="w-3/4 bg-red-500 border-3 border-red-800 text-2xl rounded-2xl flex justify-center items-center transition hover:scale-120 hover:shadow-[0_0_20px_oklch(63.7%_0.237_25.331/0.6)]">Import classes</button>
+                <button onclick={finalizeImport} class="w-3/4 bg-red-500 border-3 border-red-800 text-2xl rounded-2xl flex justify-center items-center transition hover:scale-120 hover:shadow-[0_0_20px_oklch(63.7%_0.237_25.331/0.6)]">Import classes</button>
             {/await}
         {/if}
     {:else}
-        {#if !valid_json}
+        {#if !validJSON}
             <h1>Invalid!</h1>
         {/if}
-        {#if has_data}
-            <button onclick={finalize_import} class={`w-3/4 ${valid_json() ? "bg-blue-500 border-3 border-blue-800 text-2xl" : "bg-red-500 border-3 border-red-800 text-2xl"} rounded-2xl flex justify-center items-center transition hover:scale-120 ${valid_json() ? "hover:shadow-[0_0_20px_oklch(62.3%_0.214_259.815/0.6)]" : "hover:shadow-[0_0_20px_oklch(63.7%_0.237_25.331/0.6)]"}`}>Import classes</button>
+        {#if hasData}
+            <button onclick={finalizeImport} class={`w-3/4 ${validJSON() ? "bg-blue-500 border-3 border-blue-800 text-2xl" : "bg-red-500 border-3 border-red-800 text-2xl"} rounded-2xl flex justify-center items-center transition hover:scale-120 ${validJSON() ? "hover:shadow-[0_0_20px_oklch(62.3%_0.214_259.815/0.6)]" : "hover:shadow-[0_0_20px_oklch(63.7%_0.237_25.331/0.6)]"}`}>Import classes</button>
         {/if}
     {/if}
 </div>

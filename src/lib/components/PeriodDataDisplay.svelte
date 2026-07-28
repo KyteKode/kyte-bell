@@ -1,9 +1,6 @@
 <script lang="ts">
     import { Icon, PencilSquare } from "svelte-hero-icons";
 
-    // i have no idea why but i need to import globals here or it throws error 500
-    // its not even used anywhere in the file
-    import {} from "$lib/globals.svelte";
     import PeriodData from "$lib/period_data.svelte";
 
     interface Props {
@@ -26,12 +23,12 @@
 
     <span>
         <span class="font-bold">Start:</span>
-        {data.start.to_string()}
+        {data.start.toString()}
     </span>
 
     <span>
         <span class="font-bold">End:</span>
-        {data.end.to_string()}
+        {data.end.toString()}
     </span>
 
     {#each Object.entries(data.other) as [key, other_data] (key)}

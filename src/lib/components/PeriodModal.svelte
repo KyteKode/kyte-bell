@@ -8,38 +8,38 @@
     interface Props {
         data: PeriodData,
         hide: () => void,
-        submit_info: () => void,
+        submitInfo: () => void,
         children?: Snippet
     }
 
-    let { data = $bindable(), hide, submit_info, children }: Props = $props();
+    let { data = $bindable(), hide, submitInfo, children }: Props = $props();
 
     // Recommendations for other info
-    let add_recommendations: string[] = $state(
+    let addRecommendations: string[] = $state(
         Object.keys(globals.common_other)
             .filter( (name) => !data.other[name] )
     );
 
-    let info_name: string = $state("");
+    let infoName: string = $state("");
 
     // Add extra user defined info
-    function add_other_info(use_info_name: boolean, key?: string) {
-        let key_name = key ?? info_name;
+    function addOtherInfo(useInfoName: boolean, key?: string) {
+        let keyName = key ?? infoName;
 
-        if (!data.other[key_name] && key_name.trim() != "") {
-            data.other[key_name] = "";
+        if (!data.other[keyName] && keyName.trim() != "") {
+            data.other[keyName] = "";
 
 
-            if (use_info_name) {
-                info_name = "";
+            if (useInfoName) {
+                infoName = "";
             } else {
-                add_recommendations = add_recommendations.filter( (name) => name != key_name);
+                addRecommendations = addRecommendations.filter( (name) => name != keyName);
             }
         }
     }
 
     // Remove extra user defined info
-    function remove_other_info(key: string) {
+    function removeOtherInfo(key: string) {
         delete data.other[key];
     }
 </script>
@@ -60,20 +60,20 @@
         {#each Object.entries(data.other) as [name] (name)}
             <span class="flex flex-row justify-start items-center">
                 <span class="w-32 text-xl wrap-break-word">{name}:</span>
-                <button onclick={() => {remove_other_info(name)}} class="bg-slate-100 border-3 border-slate-400 text-2xl text-black aspect-square size-10 rounded-2xl flex justify-center items-center transition hover:scale-120">-</button>
+                <button onclick={() => {removeOtherInfo(name)}} class="bg-slate-100 border-3 border-slate-400 text-2xl text-black aspect-square size-10 rounded-2xl flex justify-center items-center transition hover:scale-120">-</button>
             </span>
             <input bind:value={data.other[name]} class="min-w-0 h-12 rounded-2xl  text-slate-900 border-3 border-slate-400" type="text">
         {/each}
 
         <span class="w-15 text-xl">Other:</span>
         <span class="w-56 gap-3 flex items-center justify-center">
-            <input bind:value={info_name} class="min-w-0 h-12 rounded-2xl  text-slate-900 border-3 border-slate-400" type="text">
-            <button onclick={() => add_other_info(true)} class="bg-slate-100 border-3 border-slate-400 text-2xl text-black aspect-square size-10 rounded-2xl flex justify-center items-center transition hover:scale-120">+</button>
+            <input bind:value={infoName} class="min-w-0 h-12 rounded-2xl  text-slate-900 border-3 border-slate-400" type="text">
+            <button onclick={() => addOtherInfo(true)} class="bg-slate-100 border-3 border-slate-400 text-2xl text-black aspect-square size-10 rounded-2xl flex justify-center items-center transition hover:scale-120">+</button>
         </span>
 
         <div class="grid grid-cols-2 gap-4 w-full col-span-2 p-3">
-            {#each add_recommendations as name (name)}
-                <button onclick={() => add_other_info(false, name)} class="bg-slate-100 border-3 border-slate-400 text-black rounded-2xl h-12  transition hover:scale-110">+ {name}</button>
+            {#each addRecommendations as name (name)}
+                <button onclick={() => addOtherInfo(false, name)} class="bg-slate-100 border-3 border-slate-400 text-black rounded-2xl h-12  transition hover:scale-110">+ {name}</button>
             {/each}
         </div>
     </div>
@@ -84,15 +84,15 @@
 
             <ul class="list-disc pl-5 space-y-2">
                 {#if !data.valid.start_valid}
-                    <li>{data.start.to_string()} is not a valid start time.</li>
+                    <li>{data.start.toString()} is not a valid start time.</li>
                 {/if}
 
                 {#if !data.valid.end_valid}
-                    <li>{data.end.to_string()} is not a valid end time.</li>
+                    <li>{data.end.toString()} is not a valid end time.</li>
                 {/if}
 
                 {#if !data.valid.end_after_start}
-                    <li>The end time ({data.end.to_string()}) is not after the start time ({data.start.to_string()}).</li>
+                    <li>The end time ({data.end.toString()}) is not after the start time ({data.start.toString()}).</li>
                 {/if}
 
                 {#if !data.valid.no_time_overlap}
@@ -105,7 +105,7 @@
             </ul>
         {/if}
 
-        <button onclick={submit_info} class={`w-3/4 ${data.valid.overall ? "bg-blue-500 border-3 border-blue-800 text-2xl" : "bg-red-500 border-3 border-red-800 text-2xl"} rounded-2xl flex justify-center items-center transition hover:scale-120 ${data.valid.overall ? "hover:shadow-[0_0_20px_oklch(62.3%_0.214_259.815/0.6)]" : "hover:shadow-[0_0_20px_oklch(63.7%_0.237_25.331/0.6)]"}`}>Confirm</button>
+        <button onclick={submitInfo} class={`w-3/4 ${data.valid.overall ? "bg-blue-500 border-3 border-blue-800 text-2xl" : "bg-red-500 border-3 border-red-800 text-2xl"} rounded-2xl flex justify-center items-center transition hover:scale-120 ${data.valid.overall ? "hover:shadow-[0_0_20px_oklch(62.3%_0.214_259.815/0.6)]" : "hover:shadow-[0_0_20px_oklch(63.7%_0.237_25.331/0.6)]"}`}>Confirm</button>
 
         {@render children?.()}
     </div>

@@ -3,7 +3,7 @@ import PeriodValidData from "$lib/period_valid_data.svelte"
 import globals from "$lib/globals.svelte";
 import type { ZPeriodData } from "$lib/storage_schemas";
 
-function latest_end() {
+function latestEnd() {
     let latest: Time | null = null;
     for (const period of globals.periods) {
         if (latest == null || period.end.after(latest)) {
@@ -21,7 +21,7 @@ export default class PeriodData {
     other: Record<string, string> = $state({});
     name: string = $state("Class");
 
-    edit_idx: number | null = $state(null);
+    editIdx: number | null = $state(null);
 
     valid: PeriodValidData = $derived(this.is_valid());
 
@@ -29,30 +29,30 @@ export default class PeriodData {
         if (start) {
             this.start = start;
         } else {
-            const latest = latest_end() ?? new Time();
+            const latest = latestEnd() ?? new Time();
             this.start = latest.clone();
         }
 
         if (end) {
             this.end = end;
         } else {
-            const latest = latest_end() ?? new Time();
+            const latest = latestEnd() ?? new Time();
 
-            let new_min = Number(latest.minute) + 40;
-            let new_hour = Number(latest.hour);
-            let new_ampm = latest.ampm;
-            if (new_min > 59) {
-                new_min %= 60;
-                new_hour++;
-                if (new_hour == 12) {
-                    new_ampm = 1 - new_ampm;
+            let newMin = Number(latest.minute) + 40;
+            let newHour = Number(latest.hour);
+            let newAMPM = latest.ampm;
+            if (newMin > 59) {
+                newMin %= 60;
+                newHour++;
+                if (newHour == 12) {
+                    newAMPM = 1 - newAMPM;
                 }
-                if (new_hour == 13) {
-                    new_hour = 1;
+                if (newHour == 13) {
+                    newHour = 1;
                 }
             }
 
-            this.end = new Time(new_hour, new_min, new_ampm);
+            this.end = new Time(newHour, newMin, newAMPM);
         }
 
         this.other = other ?? {};
@@ -60,39 +60,39 @@ export default class PeriodData {
     }
 
     private is_valid(this: PeriodData): PeriodValidData {
-        const valid_data: PeriodValidData = new PeriodValidData();
+        const validData: PeriodValidData = new PeriodValidData();
 
         // Checks if the start and end is valid
-        valid_data.start_valid = this.start.valid;
-        valid_data.end_valid = this.end.valid;
+        validData.start_valid = this.start.valid;
+        validData.end_valid = this.end.valid;
 
         // Checks if the start is before the end
-        valid_data.end_after_start = this.end.after(this.start);
+        validData.end_after_start = this.end.after(this.start);
 
         // Checks if period overlaps with any other periods in any way
-        valid_data.no_time_overlap = true;
-        valid_data.no_name_overlap = true;
+        validData.no_time_overlap = true;
+        validData.no_name_overlap = true;
 
         for (const [idx, data] of globals.periods.entries()) {
-            if (idx === this.edit_idx) continue;
+            if (idx === this.editIdx) continue;
 
             // Checks if time overlaps
-            const this_start = this.start.to_minutes();
-            const this_end = this.end.to_minutes();
-            const other_start = data.start.to_minutes();
-            const other_end = data.end.to_minutes();
+            const thisStart = this.start.toMinutes();
+            const thisEnd = this.end.toMinutes();
+            const otherStart = data.start.toMinutes();
+            const otherEnd = data.end.toMinutes();
 
-            if (this_start < other_end && other_start < this_end) {
-                valid_data.no_time_overlap = false;
+            if (thisStart < otherEnd && otherStart < thisEnd) {
+                validData.no_time_overlap = false;
             }
         }
-        return valid_data;
+        return validData;
     }
 
     to_zod(this: PeriodData): ZPeriodData {
         return {
-            start: this.start.to_zod(),
-            end: this.end.to_zod(),
+            start: this.start.toZod(),
+            end: this.end.toZod(),
             other: this.other,
             name: this.name
         }
@@ -100,11 +100,11 @@ export default class PeriodData {
 
     static from_zod(data: ZPeriodData) {
         return new PeriodData(
-            Time.from_zod(data.start),
-            Time.from_zod(data.end),
+            Time.fromZod(data.start),
+            Time.fromZod(data.end),
             data.other,
             data.name
-        );;
+        );
     }
 
     clone(this: PeriodData): PeriodData {

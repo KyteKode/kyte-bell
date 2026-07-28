@@ -16,7 +16,7 @@ export type CurrentPeriod =
     { kind: CurrentPeriodResult.Between; next_idx: number } |
     { kind: CurrentPeriodResult.InternalError }
 
-export function get_current_period(now: Time): CurrentPeriod {
+export function getCurrentPeriod(now: Time): CurrentPeriod {
     // Checks if a current period was manually set in the dev menu
     if (globals.dev_current_period != null) {
         return {

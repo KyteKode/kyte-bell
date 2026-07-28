@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {type CurrentPeriod, CurrentPeriodResult, get_current_period} from "$lib/current_period_type";
+    import {type CurrentPeriod, CurrentPeriodResult, getCurrentPeriod} from "$lib/current_period_type";
     import Time from "$lib/time_type.svelte"
     import globals from "$lib/globals.svelte";
 
@@ -8,7 +8,7 @@
     }
 
     let { now }: Props = $props();
-    let current: CurrentPeriod = $derived(get_current_period(now));
+    let current: CurrentPeriod = $derived(getCurrentPeriod(now));
 </script>
 
 <div class="bg-slate-600 border-2 border-slate-700 p-6 rounded-2xl flex flex-col justify-center items-center w-md">
@@ -20,11 +20,11 @@
 
         <span class="w-full flex justify-center items-center gap-1">
             <span class="font-bold">Started:</span>
-            {now.time_since(data.start)} ago
+            {now.timeSince(data.start)} ago
         </span>
         <span class="w-full flex justify-center items-center gap-1">
             <span class="font-bold">Ends in:</span>
-            {now.time_until(data.end)}
+            {now.timeUntil(data.end)}
         </span>
 
         {#each Object.entries(data.other) as [key, other_data] (key)}
@@ -44,7 +44,7 @@
 
         <span class="w-full flex justify-center items-center gap-1">
             <span class="font-bold">Starts in:</span>
-            {now.time_until(data.start)}
+            {now.timeUntil(data.start)}
         </span>
 
         {#each Object.entries(data.other) as [key, other_data] (key)}
@@ -59,7 +59,7 @@
 
         <span>
             <span class="font-bold">Classes start in:</span>
-            {now.time_until(globals.periods[0].start)}
+            {now.timeUntil(globals.periods[0].start)}
         </span>
     {:else}
         <span class="text-2xl font-black">Internal Error Occured</span>

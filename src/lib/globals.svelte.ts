@@ -1,15 +1,15 @@
 import PeriodData from "$lib/period_data.svelte";
-import { get_stored_periods, update_stored_periods } from "$lib/localstorage_updater";
+import { getStoredPeriods, updateStoredPeriods } from "$lib/localstorage_updater";
 
 import { browser } from "$app/environment";
 
 const _periods: PeriodData[] = $state(
     browser ?
-        get_stored_periods() ?? [] :
+        getStoredPeriods() ?? [] :
         []
 );
 
-const _common_other: Record<string, number> = $derived.by(() => {
+const _commonOther: Record<string, number> = $derived.by(() => {
     const updated: Record<string, number> = {};
 
     for (const period of _periods) {
@@ -28,35 +28,35 @@ const _common_other: Record<string, number> = $derived.by(() => {
     );
 });
 
-let _dev_current_period: number | null = null;
+let _devCurrentPeriods: number | null = null;
 
 const globals = {
     get periods() { return _periods; },
-    periods_push(data: PeriodData) {
+    periodsPush(data: PeriodData) {
         _periods.push(data);
-        sort_periods();
-        update_stored_periods();
+        sortPeriods();
+        updateStoredPeriods();
     },
-    periods_delete(idx: number) {
+    periodsDelete(idx: number) {
         _periods.splice(idx, 1);
-        update_stored_periods();
+        updateStoredPeriods();
     },
-    periods_update(idx: number, data: PeriodData) {
+    periodsUpdate(idx: number, data: PeriodData) {
         _periods[idx] = data;
-        sort_periods();
-        update_stored_periods();
+        sortPeriods();
+        updateStoredPeriods();
     },
 
-    get common_other() { return _common_other; },
+    get common_other() { return _commonOther; },
 
 
 
-    get dev_current_period() { return _dev_current_period; },
-    set dev_current_period(v: number | null) { _dev_current_period = v; }
+    get dev_current_period() { return _devCurrentPeriods; },
+    set devCurrentPeriod(v: number | null) { _devCurrentPeriods = v; }
 }
 
-function sort_periods() {
-    _periods.sort((a, b) => a.start.to_minutes() - b.start.to_minutes());
+function sortPeriods() {
+    _periods.sort((a, b) => a.start.toMinutes() - b.start.toMinutes());
 }
 
 export default globals;

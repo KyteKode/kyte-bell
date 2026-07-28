@@ -2,7 +2,7 @@
     import { Icon, ClipboardDocumentList, Check } from "svelte-hero-icons";
 
     import Store from "$lib/localstorage_handler";
-    import { to_binary } from "$lib/bin_convert";
+    import { toBinary } from "$lib/bin_convert";
 
     interface Props {
         hide: () => void
@@ -14,32 +14,32 @@
 
     const store = new Store();
 
-    function get_json(): string {
+    function getJSON(): string {
         return JSON.stringify(store.stored);
     }
 
-    async function get_bin(): Promise<string> {
-        return to_binary(store.stored);
+    async function getBin(): Promise<string> {
+        return toBinary(store.stored);
     }
 
 
 
-    let successful_copy: boolean = $state(false);
+    let successfulCopy: boolean = $state(false);
 
-    async function copy_data() {
-        successful_copy = false;
+    async function copyData() {
+        successfulCopy = false;
         try {
-            const text = mode == "bin" ? await get_bin() : get_json();
+            const text = mode == "bin" ? await getBin() : getJSON();
             await navigator.clipboard.writeText(text);
-            text_copy_icon = Check;
-            successful_copy = true;
+            textCopyIcon = Check;
+            successfulCopy = true;
         } catch {
-            text_copy_icon = ClipboardDocumentList;
+            textCopyIcon = ClipboardDocumentList;
             console.error("Copy failed.");
         }
     }
 
-    let text_copy_icon = $state(ClipboardDocumentList);
+    let textCopyIcon = $state(ClipboardDocumentList);
 
     let mode: "json" | "bin" = $state("bin");
 </script>
@@ -60,13 +60,13 @@
 
         <span class="text-xl m-3">Copy this.</span>
         <div class="bg-slate-900 border-black border-3 w-11/12 h-full overflow-auto text-wrap p-3 font-mono rounded-2xl relative">
-            <button onclick={copy_data} class:text-green-500={successful_copy} class="absolute right-4 top-3 rounded-2xl backdrop-blur-3xl transition hover:scale-120 bg-white/5 p-1">
-                <Icon src={text_copy_icon} class="size-10 aspect-square text-green" />
+            <button onclick={copyData} class:text-green-500={successfulCopy} class="absolute right-4 top-3 rounded-2xl backdrop-blur-3xl transition hover:scale-120 bg-white/5 p-1">
+                <Icon src={textCopyIcon} class="size-10 aspect-square text-green" />
             </button>
 
             <div class="max-w-full break-all">
                 {#if mode == "bin"}
-                    {#await get_bin()}
+                    {#await getBin()}
                         <span>Compressing data...</span>
                     {:then data}
                         <span>{data}</span>
@@ -74,7 +74,7 @@
                         <span>Error: {error}</span>
                     {/await}
                 {:else}
-                    {get_json()}
+                    {getJSON()}
                 {/if}
             </div>
         </div>

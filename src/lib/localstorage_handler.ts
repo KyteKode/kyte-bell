@@ -9,7 +9,7 @@ export enum StoreType {
     LocalStore,
 }
 
-function default_stored(): ZStoredData {
+function defaultStored(): ZStoredData {
     return {
         version: 0,
         periods: []
@@ -17,32 +17,32 @@ function default_stored(): ZStoredData {
 }
 
 export default class Store {
-    readonly #store_type: StoreType;
+    readonly #storeType: StoreType;
 
     constructor() {
-        if (!browser) { this.#store_type = StoreType.NoStore; }
+        if (!browser) { this.#storeType = StoreType.NoStore; }
 
         try {
             localStorage.setItem("testKey", "testVal");
             localStorage.removeItem("testKey");
-            this.#store_type = StoreType.LocalStore;
+            this.#storeType = StoreType.LocalStore;
         } catch {
-            this.#store_type = StoreType.NoStore;
+            this.#storeType = StoreType.NoStore;
         }
     }
 
     set stored(value: ZStoredData) {
-        if (this.#store_type === StoreType.NoStore) { return; }
+        if (this.#storeType === StoreType.NoStore) { return; }
         localStorage.setItem("periods", JSON.stringify(value));
     }
 
     get stored(): ZStoredData {
-        if (this.#store_type === StoreType.NoStore) { return default_stored(); }
+        if (this.#storeType === StoreType.NoStore) { return defaultStored(); }
 
         const raw = localStorage.getItem("periods");
 
         if (raw == null) {
-            return default_stored();
+            return defaultStored();
         }
 
         const data = JSON.parse(raw);
@@ -53,22 +53,10 @@ export default class Store {
             return v0.data;
         }
 
-        return default_stored();
+        return defaultStored();
     }
 
-    set stored_string(value: string) {
-        if (this.#store_type === StoreType.NoStore) { return; }
-
-        const data = JSON.parse(value);
-
-        const v0 = ZStoredData.safeParse(data);
-
-        if (v0.success) {
-            localStorage.setItem("periods", value);
-        }
-    }
-
-    get store_type() {
-        return this.#store_type;
+    get storeType() {
+        return this.#storeType;
     }
 }

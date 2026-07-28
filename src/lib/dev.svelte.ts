@@ -1,47 +1,47 @@
 import Store from "$lib/localstorage_handler";
 import globals from  "$lib/globals.svelte";
-import { from_binary } from "$lib/bin_convert";
+import { fromBinary } from "$lib/bin_convert";
 
-import debug_json from "$lib/assets/debug_json.json";
-import debug_base91 from "$lib/assets/debug_base91.txt?raw";
+import debugJSON from "$lib/assets/debug_json.json";
+import debugBase91 from "$lib/assets/debug_base91.txt?raw";
 
 const store = new Store();
 
-let dev_open: boolean = $state(false);
+let devOpen: boolean = $state(false);
 
 function reload() {
     window.location.reload();
 }
 
-export function toggle_dev_menu() {
-    dev_open = !dev_open;
+export function toggleDevMenu() {
+    devOpen = !devOpen;
 }
 
-export function is_dev_open(): boolean {
-    return dev_open;
+export function isDevOpen(): boolean {
+    return devOpen;
 }
 
-export function nuke_ls() {
+export function nukeLocalStorage() {
     localStorage.removeItem("periods");
     reload();
 }
 
-export function load_debug_json() {
-    store.stored = debug_json;
+export function loadDebugJSON() {
+    store.stored = debugJSON;
     reload();
 }
 
-export async function load_debug_base91() {
-    const data_result = await from_binary(debug_base91);
-    if (!data_result.some) {
+export async function loadDebugBase91() {
+    const dataResult = await fromBinary(debugBase91);
+    if (!dataResult.some) {
         alert("Could not decode");
         return;
     }
-    store.stored = data_result.data;
+    store.stored = dataResult.data;
     reload();
 }
 
-export function manual_current_period() {
+export function manualCurrentPeriod() {
     const input = prompt("Current period index");
 
     try {
@@ -56,7 +56,7 @@ export function manual_current_period() {
             new Error();
         }
 
-        globals.dev_current_period = idx;
+        globals.devCurrentPeriod = idx;
     } catch {
         alert("Bad input")
     }

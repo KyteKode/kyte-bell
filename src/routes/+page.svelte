@@ -11,7 +11,7 @@
     import Time from "$lib/time_type.svelte";
     import globals from "$lib/globals.svelte";
     import CurrentPeriodDisplay from "$lib/components/CurrentPeriodDisplay.svelte";
-    import { ls_available } from "$lib/localstorage_updater";
+    import { lsAvailable } from "$lib/localstorage_updater";
 
 
 
@@ -29,60 +29,60 @@
 
 
     // Handle new period data
-    let show_new_modal: boolean = $state(false);
-    let new_period: PeriodData = $state(new PeriodData());
+    let showNewModal: boolean = $state(false);
+    let newPeriod: PeriodData = $state(new PeriodData());
 
     // Initialize new period
-    function create_new() {
-        new_period = new PeriodData();
-        show_new_modal = true;
+    function createNew() {
+        newPeriod = new PeriodData();
+        showNewModal = true;
     }
 
     // Add the new period to the periods global
-    function add_new_period() {
-        if (new_period.valid.overall) {
-            globals.periods_push(new_period.clone());
+    function addNewPeriod() {
+        if (newPeriod.valid.overall) {
+            globals.periodsPush(newPeriod.clone());
         }
-        show_new_modal = false;
+        showNewModal = false;
     }
 
 
 
     // Handles edit data
-    let show_edit_modal: boolean = $state(false);
-    let edit_idx: number | null = $state(null);
-    let edited_period: PeriodData = $state(new PeriodData());
+    let showEditModal: boolean = $state(false);
+    let editIdx: number | null = $state(null);
+    let editedPeriod: PeriodData = $state(new PeriodData());
 
     // Edit a period
-    function start_edit(idx: number) {
-        edited_period = globals.periods[idx].clone();
-        edited_period.edit_idx = idx;
-        edit_idx = idx;
+    function startEdit(idx: number) {
+        editedPeriod = globals.periods[idx].clone();
+        editedPeriod.editIdx = idx;
+        editIdx = idx;
 
-        show_edit_modal = true;
+        showEditModal = true;
     }
 
-    function delete_period() {
-        if (edit_idx == null) { return; }
+    function deletePeriod() {
+        if (editIdx == null) { return; }
 
-        show_edit_modal = false;
-        globals.periods_delete(edit_idx);
+        showEditModal = false;
+        globals.periodsDelete(editIdx);
     }
 
-    function apply_edit() {
-        if (edit_idx == null) { return; }
+    function applyEdit() {
+        if (editIdx == null) { return; }
 
-        edited_period.edit_idx = null;
-        globals.periods_update(edit_idx, edited_period);
+        editedPeriod.editIdx = null;
+        globals.periodsUpdate(editIdx, editedPeriod);
 
-        show_edit_modal = false;
+        showEditModal = false;
     }
 
 
 
     // Handles export/import modals
-    let show_export_modal: boolean = $state(false);
-    let show_import_modal: boolean = $state(false);
+    let showExportModal: boolean = $state(false);
+    let showImportModal: boolean = $state(false);
 </script>
 
 <h1>Bell Timer</h1>
@@ -97,7 +97,7 @@
 
 <hr class="my-10 w-5/6 border-white/20 border rounded">
 
-{#if !ls_available}
+{#if !lsAvailable}
     <div class="bg-slate-600 border-2 border-slate-700 p-6 rounded-2xl flex flex-col align-center items-center">
         <span class="text-2xl font-black">Warning: LocalStorage is not available.</span>
         <span>
@@ -108,7 +108,7 @@
 {/if}
 
 <div class="relative bg-slate-800 border-2 border-slate-900 p-6 rounded-2xl">
-    <button onclick={create_new} class="bg-slate-100 border-2 border-slate-400 text-2xl text-black aspect-square size-10 rounded-2xl flex justify-center items-center transition hover:scale-120 absolute -top-3 -left-3">+</button>
+    <button onclick={createNew} class="bg-slate-100 border-2 border-slate-400 text-2xl text-black aspect-square size-10 rounded-2xl flex justify-center items-center transition hover:scale-120 absolute -top-3 -left-3">+</button>
 
     {#if Object.entries(globals.periods).length == 0}
         No classes yet...
@@ -116,24 +116,24 @@
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-5">
         {#each globals.periods as data, idx (idx)}
-            <PeriodDataDisplay data={data} edit={() => start_edit(idx)} />
+            <PeriodDataDisplay data={data} edit={() => startEdit(idx)} />
         {/each}
     </div>
 </div>
 
 
 
-{#if ls_available}
+{#if lsAvailable}
     <div class="flex justify-center items-center">
         <div class="flex justify-center items-center m-5">
-            <button onclick={() => show_export_modal = true} class="text-black bg-slate-100 border-2 border-slate-400 rounded-2xl p-2 flex justify-center items-center transition hover:scale-120">
+            <button onclick={() => showExportModal = true} class="text-black bg-slate-100 border-2 border-slate-400 rounded-2xl p-2 flex justify-center items-center transition hover:scale-120">
                 <span class="w-40">Export Data</span>
                 <Icon src={ArrowDownTray} class="size-8 aspect-square" />
             </button>
         </div>
 
         <div class="flex justify-center items-center m-5">
-            <button onclick={() => show_import_modal = true} class="text-black bg-slate-100 border-2 border-slate-400 rounded-2xl p-2 flex justify-center items-center transition hover:scale-120">
+            <button onclick={() => showImportModal = true} class="text-black bg-slate-100 border-2 border-slate-400 rounded-2xl p-2 flex justify-center items-center transition hover:scale-120">
                 <span class="w-40">Import Data</span>
                 <Icon src={ArrowUpTray} class="size-8 aspect-square" />
             </button>
@@ -143,20 +143,20 @@
 
 
 
-<ModalBlur show={show_new_modal}>
-    <PeriodModal bind:data={new_period} hide={() => show_new_modal = false} submit_info={add_new_period} />
+<ModalBlur show={showNewModal}>
+    <PeriodModal bind:data={newPeriod} hide={() => showNewModal = false} submitInfo={addNewPeriod} />
 </ModalBlur>
 
-<ModalBlur show={show_edit_modal}>
-    <PeriodModal bind:data={edited_period} hide={() => show_edit_modal = false} submit_info={apply_edit}>
-        <button onclick={delete_period} class="w-3/4 bg-red-500 border-2 border-red-800 text-2xl rounded-2xl flex justify-center items-center transition hover:scale-120 hover:shadow-[0_0_20px_oklch(63.7%_0.237_25.331/0.6)]">Delete</button>
+<ModalBlur show={showEditModal}>
+    <PeriodModal bind:data={editedPeriod} hide={() => showEditModal = false} submitInfo={applyEdit}>
+        <button onclick={deletePeriod} class="w-3/4 bg-red-500 border-2 border-red-800 text-2xl rounded-2xl flex justify-center items-center transition hover:scale-120 hover:shadow-[0_0_20px_oklch(63.7%_0.237_25.331/0.6)]">Delete</button>
     </PeriodModal>
 </ModalBlur>
 
-<ModalBlur show={show_export_modal}>
-    <ExportDataModal hide={() => show_export_modal = false} />
+<ModalBlur show={showExportModal}>
+    <ExportDataModal hide={() => showExportModal = false} />
 </ModalBlur>
 
-<ModalBlur show={show_import_modal}>
-    <ImportDataModal hide={() => show_import_modal = false} />
+<ModalBlur show={showImportModal}>
+    <ImportDataModal hide={() => showImportModal = false} />
 </ModalBlur>

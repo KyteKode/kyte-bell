@@ -3,21 +3,21 @@ import type { ZTime } from "$lib/storage_schemas";
 export default class Time {
     valid: boolean = $derived(
         (() => {
-            const valid_int = (str: string) => {
+            const validInt = (str: string) => {
                 return /^\d+$/.test(str);
             }
 
-            const num_between = (min: number, n: number, max: number) => {
+            const numBetween = (min: number, n: number, max: number) => {
                 return n >= min && n <= max;
             }
 
             // Hour is a valid integer between 1 and 12?
-            if (!valid_int(this.hour)) return false;
-            if (!num_between(1, Number(this.hour), 12)) return false;
+            if (!validInt(this.hour)) return false;
+            if (!numBetween(1, Number(this.hour), 12)) return false;
 
             // Minute is a valid integer between 0 and 59?
-            if (!valid_int(this.minute)) return false;
-            return num_between(0, Number(this.minute), 59);
+            if (!validInt(this.minute)) return false;
+            return numBetween(0, Number(this.minute), 59);
         })()
     );
 
@@ -51,7 +51,7 @@ export default class Time {
 
     private second: number = $state(0); // used only for time_until and time_since
 
-    to_zod(this: Time): ZTime {
+    toZod(this: Time): ZTime {
         return {
             hour: this.hour,
             minute: this.minute,
@@ -59,7 +59,7 @@ export default class Time {
         }
     }
 
-    static from_zod(data: ZTime) {
+    static fromZod(data: ZTime) {
         return new Time(data.hour, data.minute, data.ampm);
     }
 
@@ -83,14 +83,14 @@ export default class Time {
 
     // Changes the time to minutes for comparisons
     // e.g. 1:00 AM becomes 90, 12:00 PM becomes 720
-    to_minutes(this: Time) {
+    toMinutes(this: Time) {
         const hours = Number(this.hour) % 12 + Number(this.ampm == AMPM.PM) * 12;
         return hours * 60 + Number(this.minute);
     }
 
     // Changes the time to seconds for internal use in time_after and time_since
-    private to_seconds(this: Time) {
-        const minutes = this.to_minutes();
+    private toSeconds(this: Time) {
+        const minutes = this.toMinutes();
         return minutes * 60 + this.second;
     }
 
@@ -98,37 +98,37 @@ export default class Time {
     after(this: Time, other: Time): boolean {
         if (!this.valid || !other.valid) return false;
 
-        const this_mins = this.to_minutes();
-        const other_mins = other.to_minutes();
+        const thisMins = this.toMinutes();
+        const otherMins = other.toMinutes();
 
-        return this_mins > other_mins;
+        return thisMins > otherMins;
     }
 
     // after(), but inclusive
-    after_inclusive(this: Time, other: Time): boolean {
+    afterInclusive(this: Time, other: Time): boolean {
         if (!this.valid || !other.valid) return false;
 
-        const this_mins = this.to_minutes();
-        const other_mins = other.to_minutes();
+        const thisMins = this.toMinutes();
+        const otherMins = other.toMinutes();
 
-        return this_mins >= other_mins;
+        return thisMins >= otherMins;
     }
 
     // Checks if the time is between two times
     between(this: Time, start: Time, end: Time): boolean {
         if (!this.valid || !start.valid || !end.valid) return false;
 
-        return this.after_inclusive(start) && end.after(this);
+        return this.afterInclusive(start) && end.after(this);
     }
 
     // Evaluates the time since a different time in seconds
-    private seconds_time_since(this: Time, other: Time): number {
-        return this.to_seconds() - other.to_seconds();
+    private timeSinceSeconds(this: Time, other: Time): number {
+        return this.toSeconds() - other.toSeconds();
     }
 
     // Formats a duration in seconds as a string
-    private static format_seconds(seconds: number): string {
-        const format_unit = (amount: number, unit: string) => {
+    private static formatSeconds(seconds: number): string {
+        const formatUnit = (amount: number, unit: string) => {
             let display = amount.toString();
             if (amount == 0) {
                 display = '';
@@ -144,35 +144,35 @@ export default class Time {
         let remaining = seconds;
 
         const h = Math.floor(remaining / 3600);
-        const h_display = format_unit(h, "hour");
+        const hDisplay = formatUnit(h, "hour");
         remaining %= 3600;
 
         const m = Math.floor(remaining / 60);
-        const m_display = format_unit(m, "minute");
+        const mDisplay = formatUnit(m, "minute");
         remaining %= 60;
 
         const s = remaining;
-        const s_display = format_unit(s, "second");
+        const sDisplay = formatUnit(s, "second");
 
-        return `${h_display} ${m_display} ${s_display}`.trimEnd() + ' ';
+        return `${hDisplay} ${mDisplay} ${sDisplay}`.trimEnd() + ' ';
     }
 
     // Evaluates the time until a different time
-    time_since(this: Time, other: Time): string {
-        const since_seconds = this.seconds_time_since(other);
-        return Time.format_seconds(since_seconds);
+    timeSince(this: Time, other: Time): string {
+        const secondsSince = this.timeSinceSeconds(other);
+        return Time.formatSeconds(secondsSince);
     }
 
 
     // Evaluates the time until a different time
-    time_until(this: Time, other: Time): string {
-        const until_seconds = -this.seconds_time_since(other);
-        return Time.format_seconds(until_seconds);
+    timeUntil(this: Time, other: Time): string {
+        const secondsUntil = -this.timeSinceSeconds(other);
+        return Time.formatSeconds(secondsUntil);
     }
 
 
     // Formats the time as a string.
-    to_string(this: Time): string {
+    toString(this: Time): string {
         const h = Number(this.hour).toString();
         const m = Number(this.minute).toString().padStart(2, '0');
         return `${h}:${m} ${this.ampm == AMPM.AM ? "AM" : "PM"}`;

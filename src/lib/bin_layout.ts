@@ -1,17 +1,17 @@
 import type { ZStoredData, ZPeriodData, ZTime } from "$lib/storage_schemas";
 
 import {
-    layout_magic,
-    layout_uint32,
-    layout_uint8,
-    layout_utf8string,
+    layoutMagic,
+    layoutUint32,
+    layoutUint8,
+    layoutUtf8String,
     type LayoutElement,
     LayoutElementKind
 } from "$lib/layout_element";
 
 
 
-export function layout_length(layout: LayoutElement[]): number {
+export function layoutLength(layout: LayoutElement[]): number {
     let length = 0;
 
     for (const el of layout) {
@@ -29,66 +29,66 @@ export function layout_length(layout: LayoutElement[]): number {
                 break;
 
             case LayoutElementKind.Utf8String:
-                length += utf8_string_length(el.data).data as number;
+                length += utf8StringLength(el.data).data as number;
         }
     }
 
     return length;
 }
 
-export function get_bin_layout(data: ZStoredData): LayoutElement[] {
+export function getBinLayout(data: ZStoredData): LayoutElement[] {
     const layout: LayoutElement[] = [
         // Magic number
-        layout_magic(),
+        layoutMagic(),
         // Format version
-        layout_uint8(0),
+        layoutUint8(0),
         // Amount of periods
-        layout_uint32(data.periods.length)
+        layoutUint32(data.periods.length)
     ];
 
     for (const period of data.periods) {
-        layout.push(...period_bin_layout(period))
+        layout.push(...periodBinLayout(period))
     }
 
     return layout;
 }
 
-function period_bin_layout(period: ZPeriodData): LayoutElement[] {
-    const other_entries = Object.entries(period.other ?? {});
+function periodBinLayout(period: ZPeriodData): LayoutElement[] {
+    const otherEntries = Object.entries(period.other ?? {});
 
     const layout: LayoutElement[] = [
-        ...time_bin_layout(period.start),
-        ...time_bin_layout(period.end),
+        ...timeBinLayout(period.start),
+        ...timeBinLayout(period.end),
 
-        utf8_string_length(period.name),
-        layout_utf8string(period.name),
+        utf8StringLength(period.name),
+        layoutUtf8String(period.name),
 
-        layout_uint32(other_entries.length)
+        layoutUint32(otherEntries.length)
     ];
 
-    for (const [key, value] of other_entries) {
+    for (const [key, value] of otherEntries) {
         layout.push(
-            utf8_string_length(key),
-            layout_utf8string(key),
+            utf8StringLength(key),
+            layoutUtf8String(key),
 
-            utf8_string_length(value),
-            layout_utf8string(value)
+            utf8StringLength(value),
+            layoutUtf8String(value)
         );
     }
 
     return layout;
 }
 
-function time_bin_layout(time: ZTime): LayoutElement[] {
+function timeBinLayout(time: ZTime): LayoutElement[] {
     const byte1 = (Number(time.hour) << 1) + time.ampm;
     const byte2 = Number(time.minute);
     return [
-        layout_uint8(byte1),
-        layout_uint8(byte2)
+        layoutUint8(byte1),
+        layoutUint8(byte2)
     ];
 }
 
-const text_encoder = new TextEncoder();
-function utf8_string_length(str: string): LayoutElement {
-    return layout_uint32(text_encoder.encode(str).length);
+const textEncoder = new TextEncoder();
+function utf8StringLength(str: string): LayoutElement {
+    return layoutUint32(textEncoder.encode(str).length);
 }
