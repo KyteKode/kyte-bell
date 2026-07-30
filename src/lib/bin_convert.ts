@@ -1,10 +1,9 @@
-import {getBinLayout, layoutLength} from "$lib/bin_layout";
-import type {ZPeriodData, ZStoredData, ZTime} from "$lib/storage_schemas";
-import {LayoutElementKind} from "$lib/layout_element";
-import {AMPM} from "$lib/time_type.svelte";
+import { getBinLayout, layoutLength, LayoutElementKind } from "$lib/bin_layout";
+import type { ZPeriodData, ZStoredData, ZTime } from "$lib/storage_schemas";
+import { AMPM } from "$lib/time_type.svelte";
 
-import {Base91} from "@hpcc-js/wasm-base91";
-import {Zstd} from "@hpcc-js/wasm-zstd";
+import { Base91 } from "@hpcc-js/wasm-base91";
+import { Zstd } from "@hpcc-js/wasm-zstd";
 import { type Option, none, some } from "$lib/option";
 
 const base91 = await Base91.load();
