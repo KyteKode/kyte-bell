@@ -5,7 +5,7 @@
     import ImportDataModal from "$lib/components/ImportDataModal.svelte";
     import ModalBlur from "$lib/components/ModalBlur.svelte";
     import DebugMenu from "$lib/components/DebugMenu.svelte";
-    import { Icon, ArrowDownTray, ArrowUpTray } from "svelte-hero-icons";
+    import { Icon, ArrowDownTray, ArrowUpTray, PencilSquare } from "svelte-hero-icons";
 
     import PeriodData from "$lib/period_data.svelte";
     import Time from "$lib/time_type.svelte";
@@ -95,7 +95,7 @@
 
 <CurrentPeriodDisplay now={now} />
 
-<hr class="my-10 w-5/6 border-white/20 border rounded">
+<hr class="my-8 w-5/6 border-white/20 border rounded">
 
 {#if !lsAvailable}
     <div class="bg-slate-600 border-2 border-slate-700 p-6 rounded-2xl flex flex-col align-center items-center">
@@ -107,8 +107,28 @@
     </div>
 {/if}
 
-<div class="relative bg-slate-800 border-2 border-slate-900 p-6 rounded-2xl">
-    <button onclick={createNew} class="bg-slate-100 border-2 border-slate-400 text-2xl text-black aspect-square size-10 rounded-2xl flex justify-center items-center transition hover:scale-120 absolute -top-3 -left-3">+</button>
+
+<div class="w-88 bg-slate-800 border-2 border-slate-900 p-4 rounded-2xl mb-8 flex flex-row items-center justify-between">
+    <span class="flex flex-row items-center justify-start gap-3">
+        <span class="text-xl">Preset:</span>
+        <select bind:value={globals.currentPreset} class="h-12 rounded-2xl text-slate-900 justify-center border-3 border-slate-400">
+            {#each globals.presets as data, idx (idx)}
+                <option value={idx} >{data.name}</option>
+            {/each}
+        </select>
+    </span>
+
+    <span class="flex flex-row items-center justify-end gap-3">
+        <button onclick={() => {}} class="p-2 bg-slate-100 border-2 border-slate-400 text-2xl text-black aspect-square size-10 rounded-2xl flex justify-center items-center transition hover:scale-120">
+            <Icon src={PencilSquare} />
+        </button>
+        <button onclick={() => {}} class="bg-slate-100 border-2 border-slate-400 text-2xl text-black aspect-square size-10 rounded-2xl flex justify-center items-center transition hover:scale-120">+</button>
+    </span>
+</div>
+
+<div class="relative bg-slate-800 border-2 border-slate-900 p-6 rounded-2xl flex flex-col items-center">
+    <button onclick={createNew} class="bg-slate-100 border-2 border-slate-400 text-2xl text-black aspect-square size-10 rounded-2xl flex justify-center items-center transition hover:scale-120 absolute -top-5 -left-5">+</button>
+
 
     {#if Object.entries(globals.periods).length == 0}
         No classes yet...

@@ -1,13 +1,26 @@
 import PeriodData from "$lib/period_data.svelte";
 import { getStoredPeriods, updateStoredPeriods } from "$lib/localstorage_updater";
+import Preset from "$lib/preset.svelte";
 
 import { browser } from "$app/environment";
 
-const _periods: PeriodData[] = $state(
-    browser ?
-        getStoredPeriods() ?? [] :
-        []
-);
+
+
+const _presets: Preset[] = $state([
+    new Preset(
+        "Classes",
+        browser ? getStoredPeriods() ?? [] : []
+    )
+]);
+
+let _manualPreset: number | null = $state(null);
+const _currentPreset = $derived.by(() => {
+    if (_manualPreset != null) { return _manualPreset; }
+
+    return 0;
+})
+
+const _periods: PeriodData[] = $derived(_presets[0].periods);
 
 const _commonOther: Record<string, number> = $derived.by(() => {
     const updated: Record<string, number> = {};
@@ -24,7 +37,7 @@ const _commonOther: Record<string, number> = $derived.by(() => {
 
     return Object.fromEntries(
         Object.entries(updated)
-            .filter( ([, freq]) => freq >= 3 )
+            .filter(([, freq]) => freq >= 3)
     );
 });
 
@@ -48,6 +61,20 @@ const globals = {
     },
 
     get common_other() { return _commonOther; },
+
+    get presets() { return _presets },
+    presestsPush(data: Preset) {
+        _presets.push(data);
+    },
+    presetsDelete(idx: number) {
+        _presets.splice(idx, 1);
+    },
+    presetsUpdate(idx: number, data: Preset) {
+        _presets[idx] = data;
+    },
+
+    get currentPreset() { return _currentPreset; },
+    set currentPreset(v: number) { _manualPreset = v },
 
 
 
