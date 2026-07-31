@@ -1,15 +1,9 @@
 import PeriodData from "$lib/period_data.svelte";
 
-export enum PresetCriterionKind {
-    DayOfWeek,
-    Month,
-    Date
-}
-
 export type PresetCriterion =
-    { kind: PresetCriterionKind.DayOfWeek, day: number } |
-    { kind: PresetCriterionKind.Month, month: number } |
-    { kind: PresetCriterionKind.Date, day: number, month: number };
+    { kind: "dayOfWeek", day: number } |
+    { kind: "month", month: number } |
+    { kind: "date", day: number, month: number };
 
 export default class Preset {
     name: string;
@@ -23,19 +17,28 @@ export default class Preset {
     }
 
     criteria_met(this: Preset): boolean {
+        // eslint-disable-next-line svelte/prefer-svelte-reactivity
         const today = new Date();
         for (const criterion of this.criteria) {
             switch (criterion.kind) {
-                case PresetCriterionKind.DayOfWeek:
+                case "dayOfWeek":
                     if (today.getDay() == criterion.day) { return true; }
                     break;
-                case PresetCriterionKind.Month:
+                case "month":
                     if (today.getMonth() == criterion.month) { return true; }
                     break;
-                case PresetCriterionKind.Date:
+                case "date":
                     if (today.getMonth() == criterion.month && today.getDate() == criterion.day) { return true; }
             }
         }
         return false;
+    }
+
+    clone(this: Preset): Preset {
+        return new Preset(
+            $state.snapshot(this.name),
+            this.periods.map(p => p.clone()),
+            $state.snapshot(this.criteria)
+        );
     }
 }

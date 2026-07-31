@@ -5,9 +5,11 @@
     import ImportDataModal from "$lib/components/ImportDataModal.svelte";
     import ModalBlur from "$lib/components/ModalBlur.svelte";
     import DebugMenu from "$lib/components/DebugMenu.svelte";
+    import PresetModal from "$lib/components/PresetModal.svelte";
     import { Icon, ArrowDownTray, ArrowUpTray, PencilSquare } from "svelte-hero-icons";
 
     import PeriodData from "$lib/period_data.svelte";
+    import Preset from "$lib/preset.svelte";
     import Time from "$lib/time_type.svelte";
     import globals from "$lib/globals.svelte";
     import CurrentPeriodDisplay from "$lib/components/CurrentPeriodDisplay.svelte";
@@ -29,13 +31,13 @@
 
 
     // Handle new period data
-    let showNewModal: boolean = $state(false);
+    let showNewPeriodModal: boolean = $state(false);
     let newPeriod: PeriodData = $state(new PeriodData());
 
     // Initialize new period
-    function createNew() {
+    function createNewPeriod() {
         newPeriod = new PeriodData();
-        showNewModal = true;
+        showNewPeriodModal = true;
     }
 
     // Add the new period to the periods global
@@ -43,7 +45,7 @@
         if (newPeriod.valid.overall) {
             globals.periodsPush(newPeriod.clone());
         }
-        showNewModal = false;
+        showNewPeriodModal = false;
     }
 
 
@@ -83,6 +85,26 @@
     // Handles export/import modals
     let showExportModal: boolean = $state(false);
     let showImportModal: boolean = $state(false);
+
+
+    // Handles new presets
+    let showNewPresetModal = $state(false);
+    let newPreset = $state(new Preset());
+    let newPresetDefault = $state(false);
+
+    function createNewPreset() {
+        newPreset = new Preset();
+        showNewPresetModal = true;
+        newPresetDefault = false;
+    }
+
+    function addNewPreset() {
+        globals.presetsPush(newPreset.clone());
+        showNewPresetModal = false;
+        globals.currentPreset = globals.presets.length - 1;
+
+        if (newPresetDefault) { globals.defaultPreset = globals.currentPreset; }
+    }
 </script>
 
 <h1>Bell Timer</h1>
@@ -122,12 +144,12 @@
         <button onclick={() => {}} class="p-2 bg-slate-100 border-2 border-slate-400 text-2xl text-black aspect-square size-10 rounded-2xl flex justify-center items-center transition hover:scale-120">
             <Icon src={PencilSquare} />
         </button>
-        <button onclick={() => {}} class="bg-slate-100 border-2 border-slate-400 text-2xl text-black aspect-square size-10 rounded-2xl flex justify-center items-center transition hover:scale-120">+</button>
+        <button onclick={createNewPreset} class="bg-slate-100 border-2 border-slate-400 text-2xl text-black aspect-square size-10 rounded-2xl flex justify-center items-center transition hover:scale-120">+</button>
     </span>
 </div>
 
 <div class="relative bg-slate-800 border-2 border-slate-900 p-6 rounded-2xl flex flex-col items-center">
-    <button onclick={createNew} class="bg-slate-100 border-2 border-slate-400 text-2xl text-black aspect-square size-10 rounded-2xl flex justify-center items-center transition hover:scale-120 absolute -top-5 -left-5">+</button>
+    <button onclick={createNewPeriod} class="bg-slate-100 border-2 border-slate-400 text-2xl text-black aspect-square size-10 rounded-2xl flex justify-center items-center transition hover:scale-120 absolute -top-5 -left-5">+</button>
 
 
     {#if Object.entries(globals.periods).length == 0}
@@ -163,8 +185,8 @@
 
 
 
-<ModalBlur show={showNewModal}>
-    <PeriodModal bind:data={newPeriod} hide={() => showNewModal = false} submitInfo={addNewPeriod} />
+<ModalBlur show={showNewPeriodModal}>
+    <PeriodModal bind:data={newPeriod} hide={() => showNewPeriodModal = false} submitInfo={addNewPeriod} />
 </ModalBlur>
 
 <ModalBlur show={showEditModal}>
@@ -179,4 +201,8 @@
 
 <ModalBlur show={showImportModal}>
     <ImportDataModal hide={() => showImportModal = false} />
+</ModalBlur>
+
+<ModalBlur show={showNewPresetModal}>
+    <PresetModal bind:data={newPreset} bind:isDefault={newPresetDefault} hide={() => showNewPresetModal = false} submitInfo={addNewPreset} />
 </ModalBlur>

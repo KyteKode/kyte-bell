@@ -14,13 +14,14 @@ const _presets: Preset[] = $state([
 ]);
 
 let _manualPreset: number | null = $state(null);
+let _defaultPreset: number = 0;
 const _currentPreset = $derived.by(() => {
     if (_manualPreset != null) { return _manualPreset; }
 
-    return 0;
+    return _defaultPreset;
 })
 
-const _periods: PeriodData[] = $derived(_presets[0].periods);
+const _periods: PeriodData[] = $derived(_presets[_currentPreset]?.periods ?? []);
 
 const _commonOther: Record<string, number> = $derived.by(() => {
     const updated: Record<string, number> = {};
@@ -63,7 +64,7 @@ const globals = {
     get common_other() { return _commonOther; },
 
     get presets() { return _presets },
-    presestsPush(data: Preset) {
+    presetsPush(data: Preset) {
         _presets.push(data);
     },
     presetsDelete(idx: number) {
@@ -76,9 +77,11 @@ const globals = {
     get currentPreset() { return _currentPreset; },
     set currentPreset(v: number) { _manualPreset = v },
 
+    set defaultPreset(v: number) { _defaultPreset = v; },
 
 
-    get dev_current_period() { return _devCurrentPeriods; },
+
+    get devCurrentPeriod() { return _devCurrentPeriods; },
     set devCurrentPeriod(v: number | null) { _devCurrentPeriods = v; }
 }
 
