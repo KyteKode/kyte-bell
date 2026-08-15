@@ -1,11 +1,13 @@
 <script lang="ts">
-    import ExportDataModal from "$lib/components/ExportDataModal.svelte";
-    import ImportDataModal from "$lib/components/ImportDataModal.svelte";
-    import DebugMenu from "$lib/components/DebugMenu.svelte";
-    import NewPresetModal from "$lib/components/NewPresetModal.svelte";
-
     import Button from "$lib/components/Button.svelte";
     import PeriodList from "$lib/components/PeriodList.svelte";
+    import DebugMenu from "$lib/components/DebugMenu.svelte";
+
+    import ExportDataModal from "$lib/components/ExportDataModal.svelte";
+    import ImportDataModal from "$lib/components/ImportDataModal.svelte";
+
+    import NewPresetModal from "$lib/components/NewPresetModal.svelte";
+    import EditPresetModal from "$lib/components/EditPresetModal.svelte";
 
     import NewPeriodModal from "$lib/components/NewPeriodModal.svelte";
     import EditPeriodModal from "$lib/components/EditPeriodModal.svelte";
@@ -35,25 +37,8 @@
     let exportData: ExportDataModal;
     let importData: ImportDataModal;
     let newPreset: NewPresetModal;
+    let editPreset: EditPresetModal;
 
-    /* Handles new presets
-    let showNewPresetModal = $state(false);
-    let newPreset = $state(new Preset());
-    let newPresetDefault = $state(false);
-
-    function createNewPreset() {
-        newPreset = new Preset();
-        showNewPresetModal = true;
-        newPresetDefault = false;
-    }
-
-    function addNewPreset() {
-        globals.presetsPush(newPreset.clone());
-        showNewPresetModal = false;
-        globals.currentPreset = globals.presets.length - 1;
-
-        if (newPresetDefault) { globals.defaultPreset = globals.currentPreset; }
-    }*/
 </script>
 
 <h1>Bell Timer</h1>
@@ -90,7 +75,7 @@
     </span>
 
     <span class="flex flex-row items-center justify-end gap-3">
-        <Button icon={Pencil} />
+        <Button onclick={() => editPreset.edit()} icon={Pencil} />
         <Button onclick={() => newPreset.create()} icon={Plus} />
     </span>
 </div>
@@ -109,6 +94,7 @@
 <ExportDataModal bind:this={exportData} />
 <ImportDataModal bind:this={importData} />
 <NewPresetModal bind:this={newPreset} />
+<EditPresetModal bind:this={editPreset} />
 
 <!--
 <ModalBlur show={showNewPresetModal}>

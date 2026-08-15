@@ -28,16 +28,12 @@
     }
 
     function remove() {
-        if (editIdx == null) { return; }
-
         show = false;
         globals.periodsDelete(editIdx);
     }
 
     function commit() {
         if (valid) {
-            if (editIdx == null) { return; }
-
             period.editIdx = null;
             globals.periodsUpdate(editIdx, period);
 

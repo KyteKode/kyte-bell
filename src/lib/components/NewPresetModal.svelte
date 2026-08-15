@@ -27,12 +27,16 @@
         if (valid) {
             globals.presetsPush(preset.clone());
             show = false;
+
+            if (isDefault) {
+                globals.defaultPreset = globals.presets.length - 1;
+            }
         }
     }
 </script>
 
 <ModalBlur show={show}>
-    <PresetModal bind:data={preset} bind:show={show} bind:isDefault={isDefault} bind:valid={valid}>
+    <PresetModal bind:data={preset} bind:show={show} bind:isDefault={isDefault} bind:valid={valid} hideDefault={false}>
         <Button largeText full color={color} onclick={add} icon={icon}>{addText}</Button>
     </PresetModal>
 </ModalBlur>

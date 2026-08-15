@@ -1,19 +1,45 @@
 import PeriodData from "$lib/period_data.svelte";
+import globals from "$lib/globals.svelte";
 
 export type PresetCriterion =
     { kind: "dayOfWeek", day: number } |
     { kind: "month", month: number } |
     { kind: "date", day: number, month: number };
 
+export class PresetValidData {
+    noNameOverlap: boolean = $state(false);
+
+    overall: boolean = $derived(
+        this.noNameOverlap
+    );
+}
+
 export default class Preset {
     name: string;
     periods: PeriodData[];
     criteria: PresetCriterion[];
 
+    editIdx: number | null = $state(null);
+
+    valid: PresetValidData = $derived(this.is_valid());
+
     constructor(name: string = "Classes", periods: PeriodData[] = [], criteria: PresetCriterion[] = []) {
         this.name = $state(name);
         this.periods = $state(periods);
         this.criteria = $state(criteria);
+    }
+
+    is_valid(): PresetValidData {
+        const validData = new PresetValidData();
+
+        validData.noNameOverlap = true;
+        for (const [idx, preset] of globals.presets.entries()) {
+            if (preset.name == this.name && idx != this.editIdx) {
+                validData.noNameOverlap = false;
+            }
+        }
+
+        return validData;
     }
 
     criteria_met(this: Preset): boolean {

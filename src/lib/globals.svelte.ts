@@ -7,11 +7,14 @@ import { browser } from "$app/environment";
 
 
 const _presets: Preset[] = $state([
-    new Preset(
-        "Classes",
-        browser ? getStoredPeriods() ?? [] : []
-    )
+    new Preset("Classes", [])
 ]);
+
+if (browser) {
+    queueMicrotask(() => {
+        _presets[0].periods = getStoredPeriods() ?? []
+    })
+}
 
 let _manualPreset: number | null = $state(null);
 let _defaultPreset: number = 0;
@@ -42,7 +45,7 @@ const _commonOther: Record<string, number> = $derived.by(() => {
     );
 });
 
-let _devCurrentPeriods: number | null = null;
+let _devCurrentPeriods: number | null = $state(null);
 
 const globals = {
     get periods() { return _periods; },
@@ -78,6 +81,7 @@ const globals = {
     set currentPreset(v: number) { _manualPreset = v },
 
     set defaultPreset(v: number) { _defaultPreset = v; },
+    get defaultPreset() { return _defaultPreset; },
 
 
 
