@@ -1,18 +1,21 @@
 <script lang="ts">
     import TimeInput from "$lib/components/TimeInput.svelte";
+    import Button from "$lib/components/Button.svelte";
 
     import type PeriodData from "$lib/period_data.svelte";
     import type { Snippet } from "svelte";
     import globals from "$lib/globals.svelte";
+    import { XMark, Plus } from "svelte-hero-icons";
 
     interface Props {
         data: PeriodData,
-        hide: () => void,
-        submitInfo: () => void,
-        children?: Snippet
+        show: boolean,
+        children: Snippet,
+        valid: boolean
     }
 
-    let { data = $bindable(), hide, submitInfo, children }: Props = $props();
+    // eslint-disable-next-line no-useless-assignment
+    let { data = $bindable(), show = $bindable(), valid = $bindable(), children }: Props = $props();
 
     // Recommendations for other info
     let addRecommendations: string[] = $state(
@@ -42,14 +45,18 @@
     function removeOtherInfo(key: string) {
         delete data.other[key];
     }
+
+    $effect(() => {
+        valid = data.valid.overall;
+    });
 </script>
 
-<div class="relative flex flex-col gap-5 bg-slate-600 border-3 border-slate-700 p-3 rounded-2xl w-lg">
-    <button onclick={hide} class="bg-slate-100 border-3 border-slate-400 text-2xl text-black aspect-square size-10 rounded-2xl flex justify-center items-center transition hover:scale-120 absolute -top-3 -left-3">×</button>
+<div class="relative flex flex-col gap-5 bg-slate-600 border-2 border-slate-700 p-3 rounded-2xl w-lg">
+    <Button corner onclick={() => show = false} icon={XMark} />
 
     <div class="grid grid-cols-[1fr_2fr] items-center justify-center gap-2">
         <span class="w-15 text-xl">Name:</span>
-        <input bind:value={data.name} class="min-w-0 h-12 rounded-2xl  text-slate-900 border-3 border-slate-400" type="text">
+        <input bind:value={data.name} class="min-w-0 h-12 rounded-2xl  text-slate-900 border-2 border-slate-400" type="text">
 
         <span class="w-15 text-xl">Start:</span>
         <TimeInput bind:value={data.start} />
@@ -60,28 +67,26 @@
         {#each Object.entries(data.other) as [name] (name)}
             <span class="flex flex-row justify-start items-center">
                 <span class="w-32 text-xl wrap-break-word">{name}:</span>
-                <button onclick={() => {removeOtherInfo(name)}} class="bg-slate-100 border-3 border-slate-400 text-2xl text-black aspect-square size-10 rounded-2xl flex justify-center items-center transition hover:scale-120">-</button>
+                <Button onclick={() => {removeOtherInfo(name)}} icon={Plus} />
             </span>
-            <input bind:value={data.other[name]} class="min-w-0 h-12 rounded-2xl  text-slate-900 border-3 border-slate-400" type="text">
+            <input bind:value={data.other[name]} class="min-w-0 h-12 rounded-2xl  text-slate-900 border-2 border-slate-400" type="text">
         {/each}
 
         <span class="w-15 text-xl">Other:</span>
         <span class="w-56 gap-3 flex items-center justify-center">
-            <input bind:value={infoName} class="min-w-0 h-12 rounded-2xl  text-slate-900 border-3 border-slate-400" type="text">
-            <button onclick={() => addOtherInfo(true)} class="bg-slate-100 border-3 border-slate-400 text-2xl text-black aspect-square size-10 rounded-2xl flex justify-center items-center transition hover:scale-120">+</button>
+            <input bind:value={infoName} class="min-w-0 h-12 rounded-2xl  text-slate-900 border-2 border-slate-400" type="text">
+            <Button onclick={() => {addOtherInfo(true)}} icon={Plus} />
         </span>
 
         <div class="grid grid-cols-2 gap-4 w-full col-span-2 p-3">
             {#each addRecommendations as name (name)}
-                <button onclick={() => addOtherInfo(false, name)} class="bg-slate-100 border-3 border-slate-400 text-black rounded-2xl h-12  transition hover:scale-110">+ {name}</button>
+                <Button onclick={() => {addOtherInfo(false, name)}} icon={Plus}>{name}</Button>
             {/each}
         </div>
     </div>
 
     <div class="flex flex-col justify-center items-center gap-2">
         {#if !data.valid.overall}
-            <h1>Invalid!</h1>
-
             <ul class="list-disc pl-5 space-y-2">
                 {#if !data.valid.start_valid}
                     <li>{data.start.toString()} is not a valid start time.</li>
@@ -105,8 +110,6 @@
             </ul>
         {/if}
 
-        <button onclick={submitInfo} class={`w-3/4 ${data.valid.overall ? "bg-blue-500 border-3 border-blue-800 text-2xl" : "bg-red-500 border-3 border-red-800 text-2xl"} rounded-2xl flex justify-center items-center transition hover:scale-120 ${data.valid.overall ? "hover:shadow-[0_0_20px_oklch(62.3%_0.214_259.815/0.6)]" : "hover:shadow-[0_0_20px_oklch(63.7%_0.237_25.331/0.6)]"}`}>Confirm</button>
-
-        {@render children?.()}
+        {@render children()}
     </div>
 </div>

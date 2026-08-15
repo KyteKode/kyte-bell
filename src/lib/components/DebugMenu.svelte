@@ -1,8 +1,11 @@
 <script lang="ts">
+    import Button from "$lib/components/Button.svelte";
+
     import globals from "$lib/globals.svelte";
 
     import { shortcut } from "@svelte-put/shortcut";
     import * as dev from "$lib/dev.svelte";
+    import { ExclamationTriangle } from "svelte-hero-icons";
 </script>
 
 <svelte:window
@@ -20,13 +23,13 @@
         <h1>Developer Menu</h1>
         <p>Hello! If you have found this, you should probably refresh. These actions are only made for testing purposes. Red buttons are irreversible.</p>
 
-        <button onclick={dev.manualCurrentPeriod} class="w-full bg-slate-500 border-2 border-slate-800 p-2">Manually set current period</button>
-        <button onclick={() => globals.devCurrentPeriod = null} class="w-full bg-slate-500 border-2 border-slate-800 p-2">Reset manual current period</button>
-
-        <button onclick={dev.nukeLocalStorage} class="w-full bg-red-500 border-2 border-red-800 p-2">Nuke the localstorage</button>
-        <button onclick={dev.loadDebugJSON} class="w-full bg-red-500 border-2 border-red-800 p-2">Load debug JSON</button>
-        <button onclick={dev.loadDebugBase91} class="w-full bg-red-500 border-2 border-red-800 p-2">Load debug Base91</button>
+        <Button full onclick={dev.manualCurrentPeriod}>Manually set current period</Button>
+        <Button full onclick={() => globals.devCurrentPeriod = null}>Reset manually set period</Button>
 
         <hr class="my-4 w-5/6 border-white/20 border rounded">
+
+        <Button full color="red" icon={ExclamationTriangle} onclick={dev.nukeLocalStorage}>Nuke the localstorage!!!</Button>
+        <Button full color="red" icon={ExclamationTriangle} onclick={dev.loadDebugJSON}>Load Debug (JSON)</Button>
+        <Button full color="red" icon={ExclamationTriangle} onclick={dev.loadDebugBase91}>Load Debug (Base91)</Button>
     </div>
 {/if}

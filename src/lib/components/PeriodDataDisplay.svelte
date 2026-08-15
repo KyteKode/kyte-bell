@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { Icon, PencilSquare } from "svelte-hero-icons";
+    import { Icon, Pencil } from "svelte-hero-icons";
+    import Button from "$lib/components/Button.svelte";
 
     import PeriodData from "$lib/period_data.svelte";
 
@@ -15,9 +16,12 @@
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div onmouseenter={() => hovered = true} onmouseleave={() => hovered = false} class="relative bg-slate-600 border-2 border-slate-700 p-4 rounded-2xl flex flex-col align-center">
-    <button onclick={edit} class:scale-0={!hovered} class="bg-slate-100 border-2 border-slate-400 text-2xl text-black aspect-square p-1.5 size-10 rounded-2xl flex justify-center items-center transition hover:scale-120 absolute -top-3 -right-3">
-        <Icon src={PencilSquare} />
-    </button>
+    <span class:scale-0={!hovered} class="absolute -top-4 -right-4 transition">
+        <Button onclick={edit} icon={Pencil} />
+    </span>
+    <!--button onclick={edit}  class="bg-slate-100 border-2 border-slate-400 text-2xl text-black aspect-square p-1.5 size-10 rounded-2xl flex justify-center items-center transition hover:scale-120 absolute -top-3 -right-3">
+        <Icon src={Pencil} />
+    </button-->
 
     <span class="text-3xl font-black wrap-break-word">{data.name}</span>
 
