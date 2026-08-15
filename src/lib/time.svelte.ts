@@ -1,4 +1,4 @@
-import type { ZTime } from "$lib/storage_schemas";
+import type { ZTime } from "$lib/storageSchemas";
 
 export default class Time {
     valid: boolean = $derived(
@@ -49,7 +49,7 @@ export default class Time {
         this.ampm = ampm ?? AMPM.AM;
     }
 
-    private second: number = $state(0); // used only for time_until and time_since
+    private second: number = $state(0); // used only for timeUntil and timeSince
 
     toZod(this: Time): ZTime {
         return {
@@ -88,7 +88,7 @@ export default class Time {
         return hours * 60 + Number(this.minute);
     }
 
-    // Changes the time to seconds for internal use in time_after and time_since
+    // Changes the time to seconds for internal use in timeUntil and timeSince
     private toSeconds(this: Time) {
         const minutes = this.toMinutes();
         return minutes * 60 + this.second;

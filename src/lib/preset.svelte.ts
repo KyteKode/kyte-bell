@@ -1,4 +1,4 @@
-import PeriodData from "$lib/period_data.svelte";
+import PeriodData from "$lib/period.svelte";
 import globals from "$lib/globals.svelte";
 
 export type PresetCriterion =
@@ -21,7 +21,7 @@ export default class Preset {
 
     editIdx: number | null = $state(null);
 
-    valid: PresetValidData = $derived(this.is_valid());
+    valid: PresetValidData = $derived(this.isValid());
 
     constructor(name: string = "Classes", periods: PeriodData[] = [], criteria: PresetCriterion[] = []) {
         this.name = $state(name);
@@ -29,7 +29,7 @@ export default class Preset {
         this.criteria = $state(criteria);
     }
 
-    is_valid(): PresetValidData {
+    isValid(): PresetValidData {
         const validData = new PresetValidData();
 
         validData.noNameOverlap = true;
@@ -42,7 +42,7 @@ export default class Preset {
         return validData;
     }
 
-    criteria_met(this: Preset): boolean {
+    criteriaMet(this: Preset): boolean {
         // eslint-disable-next-line svelte/prefer-svelte-reactivity
         const today = new Date();
         for (const criterion of this.criteria) {

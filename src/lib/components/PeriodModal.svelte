@@ -2,7 +2,7 @@
     import TimeInput from "$lib/components/TimeInput.svelte";
     import Button from "$lib/components/Button.svelte";
 
-    import type PeriodData from "$lib/period_data.svelte";
+    import type PeriodData from "$lib/period.svelte";
     import type { Snippet } from "svelte";
     import globals from "$lib/globals.svelte";
     import { XMark, Plus } from "svelte-hero-icons";
@@ -88,24 +88,20 @@
     <div class="flex flex-col justify-center items-center gap-2">
         {#if !data.valid.overall}
             <ul class="list-disc pl-5 space-y-2">
-                {#if !data.valid.start_valid}
+                {#if !data.valid.startValid}
                     <li>{data.start.toString()} is not a valid start time.</li>
                 {/if}
 
-                {#if !data.valid.end_valid}
+                {#if !data.valid.endValid}
                     <li>{data.end.toString()} is not a valid end time.</li>
                 {/if}
 
-                {#if !data.valid.end_after_start}
+                {#if !data.valid.endAfterStart}
                     <li>The end time ({data.end.toString()}) is not after the start time ({data.start.toString()}).</li>
                 {/if}
 
-                {#if !data.valid.no_time_overlap}
-                    <li>This class's time overlaps with the class ({data.valid.overlap_name}).</li>
-                {/if}
-
-                {#if !data.valid.no_name_overlap}
-                    <li>This class's name overlaps with the class ({data.valid.overlap_name}).</li>
+                {#if !data.valid.noTimeOverlap}
+                    <li>This class's time overlaps with the class ({data.valid.overlapName}).</li>
                 {/if}
             </ul>
         {/if}

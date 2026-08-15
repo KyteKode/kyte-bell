@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { AMPM } from "$lib/time_type.svelte";
+    import { AMPM } from "$lib/time.svelte";
 
     let { value = $bindable() } = $props();
 </script>

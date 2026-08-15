@@ -1,6 +1,6 @@
 <script lang="ts">
-    import {type CurrentPeriod, CurrentPeriodResult, getCurrentPeriod} from "$lib/current_period_type";
-    import Time from "$lib/time_type.svelte"
+    import {type CurrentPeriod, CurrentPeriodResult, getCurrentPeriod} from "$lib/currentPeriodType";
+    import Time from "$lib/time.svelte"
     import globals from "$lib/globals.svelte";
 
     interface Props {
@@ -13,7 +13,7 @@
 
 <div class="bg-slate-600 border-2 border-slate-700 p-6 rounded-2xl flex flex-col justify-center items-center w-md">
     {#if current.kind == CurrentPeriodResult.Some}
-        {@const data = globals.periods[current.current_idx]}
+        {@const data = globals.periods[current.currentIdx]}
 
         <span>Current class:</span>
         <span class="text-3xl font-black mb-3 wrap-break-word">{data.name}</span>
@@ -38,7 +38,7 @@
         <span class="text-2xl font-bold">You're free! 🥳</span>
 
     {:else if current.kind == CurrentPeriodResult.Between}
-        {@const data = globals.periods[current.next_idx]}
+        {@const data = globals.periods[current.nextIdx]}
         <span>Next class:</span>
         <span class="text-2xl font-black mb-3 wrap-break-word">{data.name}</span>
 

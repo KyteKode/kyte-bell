@@ -13,10 +13,10 @@
     import EditPeriodModal from "$lib/components/EditPeriodModal.svelte";
     import { ArrowDownTray, ArrowUpTray, Pencil, Plus } from "svelte-hero-icons";
 
-    import Time from "$lib/time_type.svelte";
+    import Time from "$lib/time.svelte.js";
     import globals from "$lib/globals.svelte";
     import CurrentPeriodDisplay from "$lib/components/CurrentPeriodDisplay.svelte";
-    import { lsAvailable } from "$lib/localstorage_updater";
+    import { lsAvailable } from "$lib/lsUpdater";
 
 
 
@@ -95,8 +95,3 @@
 <ImportDataModal bind:this={importData} />
 <NewPresetModal bind:this={newPreset} />
 <EditPresetModal bind:this={editPreset} />
-
-<!--
-<ModalBlur show={showNewPresetModal}>
-    <PresetModal bind:data={newPreset} bind:isDefault={newPresetDefault} bind:show={showNewPresetModal} submitInfo={addNewPreset} />
-</ModalBlur>-->

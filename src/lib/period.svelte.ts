@@ -1,22 +1,20 @@
-import Time from "$lib/time_type.svelte";
+import Time from "$lib/time.svelte";
 import globals from "$lib/globals.svelte";
-import type { ZPeriodData } from "$lib/storage_schemas";
+import type { ZPeriodData } from "$lib/storageSchemas";
 
 export class PeriodValidData {
-    start_valid: boolean = $state(false);
-    end_valid: boolean = $state(false);
-    end_after_start: boolean = $state(false);
-    no_time_overlap: boolean = $state(false);
-    no_name_overlap: boolean = $state(false); // reserved for later
+    startValid: boolean = $state(false);
+    endValid: boolean = $state(false);
+    endAfterStart: boolean = $state(false);
+    noTimeOverlap: boolean = $state(false);
 
-    overlap_name: string = $state("")
+    overlapName: string = $state("");
 
     overall: boolean = $derived(
-        this.start_valid &&
-        this.end_valid &&
-        this.end_after_start &&
-        this.no_time_overlap &&
-        this.no_name_overlap
+        this.startValid &&
+        this.endValid &&
+        this.endAfterStart &&
+        this.noTimeOverlap
     );
 }
 
@@ -40,7 +38,7 @@ export default class PeriodData {
 
     editIdx: number | null = $state(null);
 
-    valid: PeriodValidData = $derived(this.is_valid());
+    valid: PeriodValidData = $derived(this.isValid());
 
     constructor(start?: Time, end?: Time, other?: Record<string, string>, name?: string) {
         if (start) {
@@ -76,19 +74,18 @@ export default class PeriodData {
         this.name = name ?? "Class";
     }
 
-    private is_valid(this: PeriodData): PeriodValidData {
+    private isValid(this: PeriodData): PeriodValidData {
         const validData: PeriodValidData = new PeriodValidData();
 
         // Checks if the start and end is valid
-        validData.start_valid = this.start.valid;
-        validData.end_valid = this.end.valid;
+        validData.startValid = this.start.valid;
+        validData.endValid = this.end.valid;
 
         // Checks if the start is before the end
-        validData.end_after_start = this.end.after(this.start);
+        validData.endAfterStart = this.end.after(this.start);
 
         // Checks if period overlaps with any other periods in any way
-        validData.no_time_overlap = true;
-        validData.no_name_overlap = true;
+        validData.noTimeOverlap = true;
 
         for (const [idx, data] of globals.periods.entries()) {
             if (idx === this.editIdx) continue;
@@ -100,13 +97,14 @@ export default class PeriodData {
             const otherEnd = data.end.toMinutes();
 
             if (thisStart < otherEnd && otherStart < thisEnd) {
-                validData.no_time_overlap = false;
+                validData.noTimeOverlap = false;
+                validData.overlapName = data.name;
             }
         }
         return validData;
     }
 
-    to_zod(this: PeriodData): ZPeriodData {
+    toZod(this: PeriodData): ZPeriodData {
         return {
             start: this.start.toZod(),
             end: this.end.toZod(),
@@ -115,7 +113,7 @@ export default class PeriodData {
         }
     }
 
-    static from_zod(data: ZPeriodData) {
+    static fromZod(data: ZPeriodData) {
         return new PeriodData(
             Time.fromZod(data.start),
             Time.fromZod(data.end),

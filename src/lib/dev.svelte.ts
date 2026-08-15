@@ -1,6 +1,6 @@
-import Store from "$lib/localstorage_handler";
+import Store from "$lib/lsHandler";
 import globals from  "$lib/globals.svelte";
-import { fromBinary } from "$lib/bin_convert";
+import { fromBinary } from "$lib/binConvert";
 
 import debugJSON from "$lib/assets/debug_json.json";
 import debugBase91 from "$lib/assets/debug_base91.txt?raw";

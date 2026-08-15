@@ -1,5 +1,5 @@
-import PeriodData from "$lib/period_data.svelte";
-import { getStoredPeriods, updateStoredPeriods } from "$lib/localstorage_updater";
+import PeriodData from "$lib/period.svelte";
+import { getStoredPeriods, updateStoredPeriods } from "$lib/lsUpdater";
 import Preset from "$lib/preset.svelte";
 
 import { browser } from "$app/environment";

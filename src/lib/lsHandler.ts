@@ -1,6 +1,6 @@
 // i would use typed-local-storage, but it wasnt working for some reason ;-;
 
-import { ZStoredData } from "$lib/storage_schemas";
+import { ZStoredData } from "$lib/storageSchemas";
 
 import { browser } from "$app/environment";
 

@@ -1,4 +1,4 @@
-import Time from "$lib/time_type.svelte";
+import Time from "$lib/time.svelte";
 import globals from "$lib/globals.svelte";
 
 export enum CurrentPeriodResult {
@@ -10,18 +10,18 @@ export enum CurrentPeriodResult {
 }
 
 export type CurrentPeriod =
-    { kind: CurrentPeriodResult.Some; current_idx: number } |
+    { kind: CurrentPeriodResult.Some; currentIdx: number } |
     { kind: CurrentPeriodResult.Free } |
     { kind: CurrentPeriodResult.BeforeStart } |
-    { kind: CurrentPeriodResult.Between; next_idx: number } |
+    { kind: CurrentPeriodResult.Between; nextIdx: number } |
     { kind: CurrentPeriodResult.InternalError }
 
 export function getCurrentPeriod(now: Time): CurrentPeriod {
     // Checks if a current period was manually set in the dev menu
-    if (globals.dev_current_period != null) {
+    if (globals.devCurrentPeriod != null) {
         return {
             kind: CurrentPeriodResult.Some,
-            current_idx: globals.dev_current_period
+            currentIdx: globals.devCurrentPeriod
         }
     }
 
@@ -37,7 +37,7 @@ export function getCurrentPeriod(now: Time): CurrentPeriod {
             // In a period
             return {
                 kind: CurrentPeriodResult.Some,
-                current_idx: idx
+                currentIdx: idx
             };
         }
 
@@ -48,7 +48,7 @@ export function getCurrentPeriod(now: Time): CurrentPeriod {
                 // Between two periods
                 return {
                     kind: CurrentPeriodResult.Between,
-                    next_idx: idx + 1
+                    nextIdx: idx + 1
                 };
             }
         }

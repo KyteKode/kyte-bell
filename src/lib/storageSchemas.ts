@@ -1,4 +1,4 @@
-import { AMPM } from "$lib/time_type.svelte";
+import { AMPM } from "$lib/time.svelte";
 
 import * as z from "zod";
 

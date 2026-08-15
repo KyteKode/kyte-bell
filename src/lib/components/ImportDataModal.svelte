@@ -3,9 +3,9 @@
     import ModalBlur from "$lib/components/ModalBlur.svelte";
     import Button from "$lib/components/Button.svelte";
 
-    import Store from "$lib/localstorage_handler";
-    import { ZStoredData } from "$lib/storage_schemas";
-    import { fromBinary } from "$lib/bin_convert";
+    import Store from "$lib/lsHandler";
+    import { ZStoredData } from "$lib/storageSchemas";
+    import { fromBinary } from "$lib/binConvert";
     import { type Option, none, some } from "$lib/option";
 
     let show = $state(false);

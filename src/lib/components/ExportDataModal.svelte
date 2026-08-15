@@ -2,8 +2,8 @@
     import { ClipboardDocumentList, Check, XMark } from "svelte-hero-icons";
     import ModalBlur from "$lib/components/ModalBlur.svelte";
 
-    import Store from "$lib/localstorage_handler";
-    import { toBinary } from "$lib/bin_convert";
+    import Store from "$lib/lsHandler";
+    import { toBinary } from "$lib/binConvert";
     import Button from "$lib/components/Button.svelte";
 
     let show = $state(false);

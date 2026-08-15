@@ -1,4 +1,4 @@
-import type { ZStoredData, ZPeriodData, ZTime } from "$lib/storage_schemas";
+import type { ZStoredData, ZPeriodData, ZTime } from "$lib/storageSchemas";
 
 export enum LayoutElementKind {
     Magic,

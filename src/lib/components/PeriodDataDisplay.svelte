@@ -2,7 +2,7 @@
     import { Icon, Pencil } from "svelte-hero-icons";
     import Button from "$lib/components/Button.svelte";
 
-    import PeriodData from "$lib/period_data.svelte";
+    import PeriodData from "$lib/period.svelte";
 
     interface Props {
         data: PeriodData,

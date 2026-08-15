@@ -3,7 +3,7 @@
     import PeriodModal from "$lib/components/PeriodModal.svelte";
     import Button, { type Color } from "$lib/components/Button.svelte";
 
-    import PeriodData from "$lib/period_data.svelte";
+    import PeriodData from "$lib/period.svelte";
     import globals from "$lib/globals.svelte";
 
     import {Pencil, Trash, XMark} from "svelte-hero-icons";

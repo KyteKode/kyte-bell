@@ -1,6 +1,6 @@
-import { getBinLayout, layoutLength, LayoutElementKind } from "$lib/bin_layout";
-import type { ZPeriodData, ZStoredData, ZTime } from "$lib/storage_schemas";
-import { AMPM } from "$lib/time_type.svelte";
+import { getBinLayout, layoutLength, LayoutElementKind } from "$lib/binLayout";
+import type { ZPeriodData, ZStoredData, ZTime } from "$lib/storageSchemas";
+import { AMPM } from "$lib/time.svelte";
 
 import { Base91 } from "@hpcc-js/wasm-base91";
 import { Zstd } from "@hpcc-js/wasm-zstd";
