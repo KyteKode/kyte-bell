@@ -1,18 +1,23 @@
-import Store, {StoreType} from "$lib/lsHandler";
+import Store, { StoreType } from "$lib/lsHandler";
 import globals from "$lib/globals.svelte";
-import PeriodData from "$lib/period.svelte";
+import Preset from "$lib/preset.svelte";
 
 const store = new Store();
 export const lsAvailable = store.storeType == StoreType.LocalStore;
 
-export function updateStoredPeriods() {
+export function updateLS() {
     store.stored = {
-        version: 0,
-        periods: globals.periods.map(period => period.toZod())
+        version: 1,
+        presets: globals.presets.map(preset => preset.toZod()),
+        defaultPreset: globals.defaultPreset
     };
 }
 
-export function getStoredPeriods(): PeriodData[] {
-    return store.stored.periods
-        .map(period => PeriodData.fromZod(period));
+export function getPresets(): Preset[] {
+    return store.stored.presets
+        .map(preset => Preset.fromZod(preset));
+}
+
+export function getDefaultPreset(): number {
+    return store.stored.defaultPreset;
 }

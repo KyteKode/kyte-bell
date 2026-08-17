@@ -1,4 +1,4 @@
-import type { ZStoredData, ZPeriodData, ZTime } from "$lib/storageSchemas";
+import type { ZStoredDataV0, ZPeriod, ZTime } from "$lib/storageSchemas";
 
 export enum LayoutElementKind {
     Magic,
@@ -54,7 +54,7 @@ export function layoutLength(layout: LayoutElement[]): number {
     return length;
 }
 
-export function getBinLayout(data: ZStoredData): LayoutElement[] {
+export function getBinLayout(data: ZStoredDataV0): LayoutElement[] {
     const layout: LayoutElement[] = [
         // Magic number
         layoutMagic(),
@@ -71,7 +71,7 @@ export function getBinLayout(data: ZStoredData): LayoutElement[] {
     return layout;
 }
 
-function periodBinLayout(period: ZPeriodData): LayoutElement[] {
+function periodBinLayout(period: ZPeriod): LayoutElement[] {
     const otherEntries = Object.entries(period.other ?? {});
 
     const layout: LayoutElement[] = [

@@ -1,6 +1,8 @@
 import PeriodData from "$lib/period.svelte";
 import globals from "$lib/globals.svelte";
 
+import type { ZPreset } from "$lib/storageSchemas";
+
 export type PresetCriterion =
     { kind: "dayOfWeek", day: number } |
     { kind: "month", month: number } |
@@ -65,6 +67,22 @@ export default class Preset {
             $state.snapshot(this.name),
             this.periods.map(p => p.clone()),
             $state.snapshot(this.criteria)
+        );
+    }
+
+    toZod(this: Preset): ZPreset {
+        return {
+            name: this.name,
+            criteria: this.criteria,
+            periods: this.periods.map(period => period.toZod())
+        };
+    }
+
+    static fromZod(data: ZPreset): Preset {
+        return new Preset(
+            data.name,
+            data.periods.map(period => PeriodData.fromZod(period)),
+            data.criteria
         );
     }
 }

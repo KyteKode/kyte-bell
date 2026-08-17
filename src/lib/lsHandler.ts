@@ -1,18 +1,25 @@
 // i would use typed-local-storage, but it wasnt working for some reason ;-;
 
-import { ZStoredData } from "$lib/storageSchemas";
+import * as s from "$lib/storageSchemas";
 
-import { browser } from "$app/environment";
+import {browser} from "$app/environment";
 
 export enum StoreType {
     NoStore,
     LocalStore,
 }
 
-function defaultStored(): ZStoredData {
+function defaultStored(): s.ZStoredData {
     return {
-        version: 0,
-        periods: []
+        version: 1,
+        presets: [
+            {
+                name: "Classes",
+                periods: [],
+                criteria: []
+            }
+        ],
+        defaultPreset: 0
     };
 }
 
@@ -31,12 +38,12 @@ export default class Store {
         }
     }
 
-    set stored(value: ZStoredData) {
+    set stored(value: s.ZStoredData | s.ZStoredDataV0) {
         if (this.#storeType === StoreType.NoStore) { return; }
         localStorage.setItem("periods", JSON.stringify(value));
     }
 
-    get stored(): ZStoredData {
+    get stored(): s.ZStoredData {
         if (this.#storeType === StoreType.NoStore) { return defaultStored(); }
 
         const raw = localStorage.getItem("periods");
@@ -47,10 +54,16 @@ export default class Store {
 
         const data = JSON.parse(raw);
 
-        const v0 = ZStoredData.safeParse(data);
+        const v1 = s.ZStoredData.safeParse(data);
+
+        if (v1.success) {
+            return v1.data;
+        }
+
+        const v0 = s.ZStoredDataV0.safeParse(data);
 
         if (v0.success) {
-            return v0.data;
+            return s.migrateV1(v0.data);
         }
 
         return defaultStored();

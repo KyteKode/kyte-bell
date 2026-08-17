@@ -4,7 +4,7 @@
     import Button from "$lib/components/Button.svelte";
 
     import Store from "$lib/lsHandler";
-    import { ZStoredData } from "$lib/storageSchemas";
+    import { ZStoredDataV0 } from "$lib/storageSchemas";
     import { fromBinary } from "$lib/binConvert";
     import { type Option, none, some } from "$lib/option";
 
@@ -31,14 +31,14 @@
         }
     }
 
-    async function validBin(): Promise<Option<ZStoredData>> {
+    async function validBin(): Promise<Option<ZStoredDataV0>> {
         return await fromBinary(input);
     }
 
-    function validJSON(): Option<ZStoredData> {
+    function validJSON(): Option<ZStoredDataV0> {
         try {
             const json = JSON.parse(input);
-            return some(ZStoredData.parse(json));
+            return some(ZStoredDataV0.parse(json));
         } catch {
             return none();
         }

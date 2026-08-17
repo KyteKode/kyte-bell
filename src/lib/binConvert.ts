@@ -1,5 +1,5 @@
 import { getBinLayout, layoutLength, LayoutElementKind } from "$lib/binLayout";
-import type { ZPeriodData, ZStoredData, ZTime } from "$lib/storageSchemas";
+import type { ZPeriod, ZStoredDataV0, ZTime } from "$lib/storageSchemas";
 import { AMPM } from "$lib/time.svelte";
 
 import { Base91 } from "@hpcc-js/wasm-base91";
@@ -13,7 +13,7 @@ zstd.setCompressionLevel(12);
 
 const textDecoder = new TextDecoder();
 
-export async function toBinary(data: ZStoredData): Promise<string> {
+export async function toBinary(data: ZStoredDataV0): Promise<string> {
     const layout = getBinLayout(data);
     const length = layoutLength(layout);
 
@@ -54,7 +54,7 @@ export async function toBinary(data: ZStoredData): Promise<string> {
 
 
 
-export async function fromBinary(encoded: string): Promise<Option<ZStoredData>> {
+export async function fromBinary(encoded: string): Promise<Option<ZStoredDataV0>> {
     const decoded = base91.decode(encoded);
     const decompressed = zstd.decompress(decoded);
     const dataView = new DataView(decompressed.buffer);
@@ -66,7 +66,7 @@ export async function fromBinary(encoded: string): Promise<Option<ZStoredData>> 
     }
 
     let offset = 13; // KYTEBELL (8) + Version (1) + Period Amount (4)
-    const storedData: ZStoredData = { version: 0, periods: [] };
+    const storedData: ZStoredDataV0 = { version: 0, periods: [] };
 
     const periodAmount = dataView.getUint32(9);
     for (let i = 0; i < periodAmount; i++) {
@@ -81,7 +81,7 @@ export async function fromBinary(encoded: string): Promise<Option<ZStoredData>> 
     return some(storedData);
 }
 
-export function decodePeriod(dataView: DataView, unit8View: Uint8Array, offset: number): Option<[ZPeriodData, number]> {
+export function decodePeriod(dataView: DataView, unit8View: Uint8Array, offset: number): Option<[ZPeriod, number]> {
     const startResult = decodeTime({
         data: dataView,
         offset: offset

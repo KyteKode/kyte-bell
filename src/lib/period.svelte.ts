@@ -1,6 +1,6 @@
 import Time from "$lib/time.svelte";
 import globals from "$lib/globals.svelte";
-import type { ZPeriodData } from "$lib/storageSchemas";
+import type { ZPeriod } from "$lib/storageSchemas";
 
 export class PeriodValidData {
     startValid: boolean = $state(false);
@@ -104,7 +104,7 @@ export default class PeriodData {
         return validData;
     }
 
-    toZod(this: PeriodData): ZPeriodData {
+    toZod(this: PeriodData): ZPeriod {
         return {
             start: this.start.toZod(),
             end: this.end.toZod(),
@@ -113,7 +113,7 @@ export default class PeriodData {
         }
     }
 
-    static fromZod(data: ZPeriodData) {
+    static fromZod(data: ZPeriod) {
         return new PeriodData(
             Time.fromZod(data.start),
             Time.fromZod(data.end),

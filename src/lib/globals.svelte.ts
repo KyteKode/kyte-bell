@@ -1,28 +1,30 @@
 import PeriodData from "$lib/period.svelte";
-import { getStoredPeriods, updateStoredPeriods } from "$lib/lsUpdater";
+import { getPresets, getDefaultPreset, updateLS } from "$lib/lsUpdater";
 import Preset from "$lib/preset.svelte";
 
 import { browser } from "$app/environment";
 
 
 
-const _presets: Preset[] = $state([
-    new Preset("Classes", [])
+let _presets: Preset[] = $state([
+    new Preset("Classes", [], [])
 ]);
-
-if (browser) {
-    queueMicrotask(() => {
-        _presets[0].periods = getStoredPeriods() ?? []
-    })
-}
 
 let _manualPreset: number | null = $state(null);
 let _defaultPreset: number = 0;
+
 const _currentPreset = $derived.by(() => {
     if (_manualPreset != null) { return _manualPreset; }
 
     return _defaultPreset;
-})
+});
+
+if (browser) {
+    queueMicrotask(() => {
+        _presets = getPresets();
+        _defaultPreset = getDefaultPreset();
+    })
+}
 
 const _periods: PeriodData[] = $derived(_presets[_currentPreset]?.periods ?? []);
 
@@ -52,16 +54,16 @@ const globals = {
     periodsPush(data: PeriodData) {
         _periods.push(data);
         sortPeriods();
-        updateStoredPeriods();
+        updateLS();
     },
     periodsDelete(idx: number) {
         _periods.splice(idx, 1);
-        updateStoredPeriods();
+        updateLS();
     },
     periodsUpdate(idx: number, data: PeriodData) {
         _periods[idx] = data;
         sortPeriods();
-        updateStoredPeriods();
+        updateLS();
     },
 
     get common_other() { return _commonOther; },
@@ -69,18 +71,24 @@ const globals = {
     get presets() { return _presets },
     presetsPush(data: Preset) {
         _presets.push(data);
+        updateLS();
     },
     presetsDelete(idx: number) {
         _presets.splice(idx, 1);
+        updateLS();
     },
     presetsUpdate(idx: number, data: Preset) {
         _presets[idx] = data;
+        updateLS();
     },
 
     get currentPreset() { return _currentPreset; },
     set currentPreset(v: number) { _manualPreset = v },
 
-    set defaultPreset(v: number) { _defaultPreset = v; },
+    set defaultPreset(v: number) {
+        _defaultPreset = v;
+        updateLS();
+    },
     get defaultPreset() { return _defaultPreset; },
 
 
