@@ -3,7 +3,7 @@
     import ModalBlur from "$lib/components/ModalBlur.svelte";
 
     import Store from "$lib/lsHandler";
-    import { toBinary } from "$lib/binConvert";
+    import { encodeBin } from "$lib/binSchemas"
     import Button from "$lib/components/Button.svelte";
 
     let show = $state(false);
@@ -15,7 +15,7 @@
     }
 
     async function getBin(): Promise<string> {
-        return toBinary(store.stored);
+        return encodeBin(store.stored);
     }
 
     async function copyData() {

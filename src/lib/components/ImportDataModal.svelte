@@ -4,8 +4,8 @@
     import Button from "$lib/components/Button.svelte";
 
     import Store from "$lib/lsHandler";
-    import { ZStoredDataV0 } from "$lib/storageSchemas";
-    import { fromBinary } from "$lib/binConvert";
+    import { ZStoredData } from "$lib/storageSchemas";
+    import { decodeBin } from "$lib/binSchemas";
     import { type Option, none, some } from "$lib/option";
 
     let show = $state(false);
@@ -31,14 +31,18 @@
         }
     }
 
-    async function validBin(): Promise<Option<ZStoredDataV0>> {
-        return await fromBinary(input);
+    async function validBin(): Promise<Option<ZStoredData>> {
+        try {
+            return some(decodeBin(input));
+        } catch {
+            return none();
+        }
     }
 
-    function validJSON(): Option<ZStoredDataV0> {
+    function validJSON(): Option<ZStoredData> {
         try {
             const json = JSON.parse(input);
-            return some(ZStoredDataV0.parse(json));
+            return some(ZStoredData.parse(json));
         } catch {
             return none();
         }
@@ -101,7 +105,8 @@
         {#if mode == "bin"}
             {#if hasData}
                 {#await validBin()}
-                {:then valid}
+                {:then validOption}
+                    {@const valid = validOption.some}
                     {@const color = valid ? "blue" : "grey"}
                     {@const text = valid ? "Import Classes" : "Invalid"}
 
@@ -113,7 +118,7 @@
                 <Button full largeText color="grey">Paste something...</Button>
             {/if}
         {:else}
-            {#if !validJSON}
+            {#if !validJSON()}
                 <h1>Invalid!</h1>
             {/if}
             {#if hasData}

@@ -1,6 +1,6 @@
 import Store from "$lib/lsHandler";
 import globals from  "$lib/globals.svelte";
-import { fromBinary } from "$lib/binConvert";
+import { decodeBin } from "$lib/binSchemas";
 
 import debugJSON from "$lib/assets/debug_json.json";
 import debugBase91 from "$lib/assets/debug_base91.txt?raw";
@@ -32,12 +32,7 @@ export function loadDebugJSON() {
 }
 
 export async function loadDebugBase91() {
-    const dataResult = await fromBinary(debugBase91);
-    if (!dataResult.some) {
-        alert("Could not decode");
-        return;
-    }
-    store.stored = dataResult.data;
+    store.stored = decodeBin(debugBase91);
     reload();
 }
 
