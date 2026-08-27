@@ -27,7 +27,10 @@ export default class Store {
     readonly #storeType: StoreType;
 
     constructor() {
-        if (!browser) { this.#storeType = StoreType.NoStore; }
+        if (!browser) {
+            this.#storeType = StoreType.NoStore;
+            return;
+        }
 
         try {
             localStorage.setItem("testKey", "testVal");

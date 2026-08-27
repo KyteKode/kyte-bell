@@ -118,9 +118,6 @@
                 <Button full largeText color="grey">Paste something...</Button>
             {/if}
         {:else}
-            {#if !validJSON()}
-                <h1>Invalid!</h1>
-            {/if}
             {#if hasData}
                 {@const valid = validJSON().some}
                 {@const color = valid ? "blue" : "grey"}

@@ -48,7 +48,7 @@ export function manualCurrentPeriod() {
             idx < 0 ||
             idx >= globals.periods.length
         ) {
-            new Error();
+            throw new Error();
         }
 
         globals.devCurrentPeriod = idx;

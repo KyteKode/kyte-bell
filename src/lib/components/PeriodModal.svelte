@@ -5,7 +5,7 @@
     import type PeriodData from "$lib/period.svelte";
     import type { Snippet } from "svelte";
     import globals from "$lib/globals.svelte";
-    import { XMark, Plus } from "svelte-hero-icons";
+    import { XMark, Plus, Trash } from "svelte-hero-icons";
 
     interface Props {
         data: PeriodData,
@@ -80,7 +80,7 @@
 
         <div class="grid grid-cols-2 gap-4 w-full col-span-2 p-3">
             {#each addRecommendations as name (name)}
-                <Button onclick={() => {addOtherInfo(false, name)}} icon={Plus}>{name}</Button>
+                <Button onclick={() => {addOtherInfo(false, name)}} icon={Trash}>{name}</Button>
             {/each}
         </div>
     </div>

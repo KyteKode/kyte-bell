@@ -7,6 +7,23 @@
     }
 
     let { criterion = $bindable(), idx }: Props = $props();
+
+    function resetFields() {
+        switch (criterion.kind) {
+            case "dayOfWeek":
+                criterion.day = 0;
+                break;
+            case "month":
+                criterion.month = 0;
+                break;
+            case "date":
+                criterion.day = 0;
+                criterion.month = 0;
+                break;
+            default:
+                throw new Error("Unreachable criterion kind");
+        }
+    }
 </script>
 
 <div class="flex gap-3 justify-center items-center">
@@ -18,7 +35,7 @@
         {/if}
     </span>
 
-    <select bind:value={criterion.kind} class="h-12 rounded-2xl text-slate-900 justify-center border-2 border-slate-400">
+    <select bind:value={criterion.kind} onchange={resetFields} class="h-12 rounded-2xl text-slate-900 justify-center border-2 border-slate-400">
         <option value="dayOfWeek">Day of week</option>
         <option value="month">Month</option>
         <option value="date">Date</option>
