@@ -20,6 +20,8 @@
 
 
 
+    let { data } = $props();
+
     // Used as a depndency for the `now` variable
     let tick = $state(0);
     setInterval(() => {tick++}, 100);
@@ -46,6 +48,12 @@
     <img class="rounded-2xl" alt="" src="https://avatars.githubusercontent.com/u/231786375?s=96&;v=4">
     Created by KyteKode
 </a>
+
+{#if data.user}
+    <span>Logged in as {data.profile?.display_name}</span>
+{:else}
+    <span>Not logged in</span>
+{/if}
 
 <DebugMenu />
 
