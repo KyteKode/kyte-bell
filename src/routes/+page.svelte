@@ -14,9 +14,9 @@
     import { ArrowDownTray, ArrowUpTray, Pencil, Plus } from "svelte-hero-icons";
 
     import Time from "$lib/time.svelte.js";
-    import globals from "$lib/globals.svelte";
+    import globals from "$lib/globals.svelte.js";
     import CurrentPeriodDisplay from "$lib/components/CurrentPeriodDisplay.svelte";
-    import { lsAvailable } from "$lib/lsUpdater";
+    import { lsAvailable } from "$lib/lsUpdater.ts";
 
 
 
