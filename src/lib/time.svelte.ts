@@ -88,6 +88,15 @@ export default class Time {
         return hours * 60 + Number(this.minute);
     }
 
+    // Changes from minutes back to time
+    static fromMinutes(offset: number): Time {
+        const minutes= offset % 60;
+        const hours = Math.floor(offset / 60) - (offset >= 720 ? 12 : 0);
+        const ampm = offset >= 720 ? AMPM.PM : AMPM.AM;
+
+        return new Time(hours, minutes, ampm);
+    }
+
     // Changes the time to seconds for internal use in timeUntil and timeSince
     private toSeconds(this: Time) {
         const minutes = this.toMinutes();
@@ -163,13 +172,17 @@ export default class Time {
         return Time.formatSeconds(secondsSince);
     }
 
-
     // Evaluates the time until a different time
     timeUntil(this: Time, other: Time): string {
         const secondsUntil = -this.timeSinceSeconds(other);
         return Time.formatSeconds(secondsUntil);
     }
 
+    // Evaluates what the time would be x minutes later
+    minutesLater(this: Time, offset: number): Time {
+        console.log(Time.fromMinutes((this.toMinutes() + offset) % 1440));
+        return Time.fromMinutes((this.toMinutes() + offset) % 1440);
+    }
 
     // Formats the time as a string.
     toString(this: Time): string {

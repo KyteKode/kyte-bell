@@ -5,7 +5,7 @@
     import type PeriodData from "$lib/period.svelte";
     import type { Snippet } from "svelte";
     import globals from "$lib/globals.svelte";
-    import { XMark, Plus, Trash } from "svelte-hero-icons";
+    import { XMark, Plus, Trash, Minus } from "svelte-hero-icons";
 
     interface Props {
         data: PeriodData,
@@ -67,7 +67,7 @@
         {#each Object.entries(data.other) as [name] (name)}
             <span class="flex flex-row justify-start items-center">
                 <span class="w-32 text-xl wrap-break-word">{name}:</span>
-                <Button onclick={() => {removeOtherInfo(name)}} icon={Plus} />
+                <Button onclick={() => {removeOtherInfo(name)}} icon={Minus} />
             </span>
             <input bind:value={data.other[name]} class="min-w-0 h-12 rounded-2xl  text-slate-900 border-2 border-slate-400" type="text">
         {/each}

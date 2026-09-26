@@ -45,7 +45,22 @@ export default class PeriodData {
             this.start = start;
         } else {
             const latest = latestEnd() ?? new Time();
-            this.start = latest.clone();
+
+            let newMin = Number(latest.minute) + 3;
+            let newHour = Number(latest.hour);
+            let newAMPM = latest.ampm;
+            if (newMin > 59) {
+                newMin %= 60;
+                newHour++;
+                if (newHour == 12) {
+                    newAMPM = 1 - newAMPM;
+                }
+                if (newHour == 13) {
+                    newHour = 1;
+                }
+            }
+
+            this.start = new Time(newHour, newMin, newAMPM);
         }
 
         if (end) {
@@ -53,7 +68,7 @@ export default class PeriodData {
         } else {
             const latest = latestEnd() ?? new Time();
 
-            let newMin = Number(latest.minute) + 40;
+            let newMin = Number(latest.minute) + 43;
             let newHour = Number(latest.hour);
             let newAMPM = latest.ampm;
             if (newMin > 59) {
