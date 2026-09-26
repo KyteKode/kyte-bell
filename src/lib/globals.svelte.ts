@@ -16,6 +16,12 @@ let _defaultPreset: number = 0;
 const _currentPreset = $derived.by(() => {
     if (_manualPreset != null) { return _manualPreset; }
 
+    for (const [idx, preset] of _presets.entries()) {
+        if (preset.criteriaMet()) {
+            return idx;
+        }
+    }
+
     return _defaultPreset;
 });
 

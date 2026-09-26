@@ -4,7 +4,7 @@
 
     import type Preset from "$lib/preset.svelte";
     import type { Snippet } from "svelte";
-    import { Plus, XMark } from "svelte-hero-icons";
+    import { Plus, XMark, Minus } from "svelte-hero-icons";
 
     interface Props {
         data: Preset,
@@ -25,6 +25,10 @@
         });
     }
 
+    function deleteCriterion(idx: number) {
+        data.criteria.splice(idx, 1);
+    }
+
     $effect(() => {
         valid = data.valid.overall;
     });
@@ -41,9 +45,10 @@
             Criteria:
             <Button onclick={addCriterion} icon={Plus} />
         </span>
-        <div class="flex flex-col items-center justify-center">
+        <div class="grid grid-cols-[1fr_5fr] items-center justify-center">
             <!--eslint-disable-next-line @typescript-eslint/no-unused-vars-->
             {#each Object.entries(data.criteria) as _, idx (idx)}
+                <Button onclick={() => deleteCriterion(idx)} icon={Minus} />
                 <CriterionInput bind:criterion={data.criteria[idx]} idx={idx} />
             {/each}
         </div>
