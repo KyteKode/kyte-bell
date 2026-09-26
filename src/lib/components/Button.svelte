@@ -16,12 +16,10 @@
         full?: boolean,
         largeText?: boolean,
         largeIcon?: boolean,
-        hide?: boolean,
-        type?: string,
-        class?: string,
+        hide?: boolean
     }
 
-    let { icon, onclick, children, color, corner, full, largeText, largeIcon, hide, type, class: classes }: Props = $props();
+    let { icon, onclick, children, color, corner, full, largeText, largeIcon, hide }: Props = $props();
 
     function buttonClasses() {
         return clsx(
@@ -33,7 +31,6 @@
             largeText && "text-2xl",
             largeIcon && "size-12 p-0 aspect-square",
             hide && "scale-0",
-            classes,
 
             !color && "bg-slate-100 border-slate-400 text-black",
             color && "text-white",
@@ -53,7 +50,7 @@
     }
 </script>
 
-<button type={type} onclick={onclick} class={buttonClasses()}>
+<button onclick={onclick} class={buttonClasses()}>
     {@render children?.()}
     {#if icon}
         <Icon src={icon} class={iconClasses()} />
